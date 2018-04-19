@@ -25,8 +25,6 @@
 
 <br />
 
-Book resources for Beyond Spreadsheets with R
-
 ## Code Resources
 
 ### Installing R Packages Used in the Book
