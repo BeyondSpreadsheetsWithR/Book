@@ -38,6 +38,12 @@ package and a manifest file. The added benefit of this method is that
 you will always be able to install the versions of the packages
 _actually_ used to generate the code output in the book.
 
+First, follow the instructions in the appendix to install R.
+
+If you're on a Windows computer, you'll likely need to install RTools
+for your versions of R and Windows. If you're on Mac you'll likely
+need to install XCode.
+
 Install the `switchr` package from CRAN (the Comprehensive R Archive
 Network) using the following command inside an R session
 
@@ -60,8 +66,9 @@ switchTo("BeyondSpreadsheets", seed = BeyondSpreadsheetsManifest)
 
 This should then install all of the required packages into a special
 library which you can switch to at any time. This may take some time,
-depending on your internet connection. Don't be frightened if you see
-the occasional error message, such as
+depending on your internet connection, and a *lot* of text is going to
+go scrolling past. Don't be frightened if you see the occasional error
+message, such as
 
 ```
 Failed with error:  ‘there is no package called ‘RCurl’’
