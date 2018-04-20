@@ -50,8 +50,10 @@ install.packages("switchr")
 ```
 
 The manifest file is hosted here: <a
-href="https://raw.githubusercontent.com/BeyondSpreadsheetsWithR/Book/assets/BeyondSpreadsheetsManifest.rds">BeyondSpreadsheetsManifest.rds</a>. Download
-this file to your computer.
+href="https://raw.githubusercontent.com/BeyondSpreadsheetsWithR/Book/assets/BeyondSpreadsheetsManifest.rds">BeyondSpreadsheetsManifest.rds</a>. Additional
+details about the packages this installs are <a
+href="https://github.com/BeyondSpreadsheetsWithR/Book/wiki/Reproducible-Package-Ecosystem">in
+the wiki<a/>. Download this file to your computer.
 
 Next you need to switch to a new package library which will be seeded
 with the required packages. Change the path to reflect where you saved
