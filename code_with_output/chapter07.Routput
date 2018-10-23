@@ -1,0 +1,754 @@
+> library('knitr'); source('RGlobal.R'); source('chapter07.R', echo=TRUE, print.eval=TRUE, keep.source=TRUE, max.deparse=1e3)
+
+> ## ----creating a long data.frame manually---------------------------------
+> long_df <- data.frame(
++   id = c(
++     "person1", "person2", "person3", "person1", "person2",
++     "person3", "person1", "person2", "person3", "person1",
++     "person2", "person3"
++   ),
++   variable = c(
++     "height", "height", "height", "weight", "weight",
++     "weight", "age", "age", "age", "male", "male", "male"
++   ),
++   value = c(151.8, 139.7, 136.5, 47.8, 36.5, 
++             31.9, 63, 63, 65, 1, 0, 0),
++   stringsAsFactors = FALSE
++ )
+
+> long_df
+        id variable value
+1  person1   height 151.8
+2  person2   height 139.7
+3  person3   height 136.5
+4  person1   weight  47.8
+5  person2   weight  36.5
+6  person3   weight  31.9
+7  person1      age  63.0
+8  person2      age  63.0
+9  person3      age  65.0
+10 person1     male   1.0
+11 person2     male   0.0
+12 person3     male   0.0
+
+> ## ----creating a wide data.frame manually---------------------------------
+> wide_df <- data.frame(
++   id = c("person1", "person2", "person3"),
++   height = c(152, 140, 137),
++   weight = c(47.8, 36.5, 31.9),
++   age = c(63, 63, 65),
++   male = c(1, 0, 0),
++   stringsAsFactors = FALSE
++ )
+
+> wide_df
+       id height weight age male
+1 person1    152   47.8  63    1
+2 person2    140   36.5  63    0
+3 person3    137   31.9  65    0
+
+> ## ----get the working directory path, eval = FALSE------------------------
+> ## getwd() 
+> ## #> [1] "/home/user"
+> 
+> ## ----load and attach the here package, eval = FALSE----------------------
+> ## # install.packages("here")
+> ## library(here)
+> ## #>  here() starts at /home/user/myProject
+> 
+> ## ----tab separated data, eval = FALSE------------------------------------
+> ## id	height	weight	age	male
+> ## person1	152	47.8	63	1
+> ## person2	140	36.5	63	0
+> ## person3	137	31.9	65	0
+> 
+> ## ----reading data from an external source--------------------------------
+> Howell_data <- "https://github.com/rmcelreath/rethinking/raw/master/data/Howell1.csv"
+
+> head(                   
++   read.table(
++     file = Howell_data, 
++     sep = ";",          
++     header = TRUE       
++   )
++ )
+   height   weight age male
+1 151.765 47.82561  63    1
+2 139.700 36.48581  63    0
+3 136.525 31.86484  65    0
+4 156.845 53.04191  41    1
+5 145.415 41.27687  51    0
+6 163.830 62.99259  35    1
+
+> ## ----load and attach the rio package-------------------------------------
+> # install.packages("rio")
+> library(rio)
+
+> ## ----load and attach the rvest package-----------------------------------
+> # install.packages("rvest")
+> library(rvest)
+
+> ## ----storing a URL as a variable-----------------------------------------
+> r_lang_URL <- "https://en.wikipedia.org/wiki/R_(programming_language)"
+
+> ## ----extracting the source HTML from a URL-------------------------------
+> r_html <- read_html(r_lang_URL) 
+
+> ## ----extracting elements with a table tag from the HTML source-----------
+> html_nodes(r_html, "table")
+{xml_nodeset (9)}
+[1] <table class="infobox vevent" style="width:22em">\n<caption class="summar ...
+[2] <table class="wikitable">\n<tr>\n<th>Release</th>\n<th>Date</th>\n<th>Des ...
+[3] <table class="plainlinks metadata ambox ambox-content ambox-Weasel" role= ...
+[4] <table class="plainlinks metadata ambox ambox-content ambox-peacock" role ...
+[5] <table class="nowraplinks collapsible autocollapse navbox-inner" style="b ...
+[6] <table class="nowraplinks collapsible autocollapse navbox-inner" style="b ...
+[7] <table class="nowraplinks hlist collapsible collapsed navbox-inner" style ...
+[8] <table class="nowraplinks navbox-subgroup" style="border-spacing:0">\n<tr ...
+[9] <table class="nowraplinks hlist navbox-inner" style="border-spacing:0;bac ...
+
+> ## ----extracting objects of class wikitable from the HTML source----------
+> release_html <- html_node(r_html, ".wikitable")
+
+> ## ----converting a HTML table to a data.frame-----------------------------
+> release_table <- html_table(release_html)
+
+> ## ----printing the first two columns of the table data.frame--------------
+> release_table[, 1:2]
+   Release       Date
+1     0.16           
+2     0.49 1997-04-23
+3     0.60 1997-12-05
+4   0.65.1 1999-10-07
+5      1.0 2000-02-29
+6      1.4 2001-12-19
+7      2.0 2004-10-04
+8      2.1 2005-04-18
+9     2.11 2010-04-22
+10    2.13 2011-04-14
+11    2.14 2011-10-31
+12    2.15 2012-03-30
+13     3.0 2013-04-03
+
+> ## ----extracting the elements with tag toc from the HTML source-----------
+> tag_toc_html <- html_nodes(r_html, "#toc")
+
+> ## ----extracting elements with ul li and a tags from the HTML toc table----
+> toplevel_toc_links <- html_nodes(tag_toc_html, "ul li a")
+
+> ## ----extracting text from the toplevel_toc table-------------------------
+> toplevel_toc_text <- html_text(toplevel_toc_links)
+
+> toplevel_toc_text
+ [1] "1 History"                              
+ [2] "2 Statistical features"                 
+ [3] "3 Programming features"                 
+ [4] "4 Packages"                             
+ [5] "5 Milestones"                           
+ [6] "6 Interfaces"                           
+ [7] "7 Implementations"                      
+ [8] "8 useR! conferences"                    
+ [9] "9 R Journal"                            
+[10] "10 Comparison with SAS, SPSS, and Stata"
+[11] "11 Commercial support for R"            
+[12] "12 Examples"                            
+[13] "12.1 Basic syntax"                      
+[14] "12.2 Structure of a function"           
+[15] "12.3 Mandelbrot set"                    
+[16] "13 See also"                            
+[17] "14 References"                          
+[18] "15 External links"                      
+
+> ## ----using the pipe to avoid naming intermediate variables---------------
+> r_lang_URL %>%                 # take the URL
++   read_html() %>%              # read the HTML source
++   html_node(".wikitable") %>%  # extract the node with class 'wikitable'
++   html_table() %>%             # convert the table to a data.frame
++   .[c(1, 2)]                   # select the first two columns
+   Release       Date
+1     0.16           
+2     0.49 1997-04-23
+3     0.60 1997-12-05
+4   0.65.1 1999-10-07
+5      1.0 2000-02-29
+6      1.4 2001-12-19
+7      2.0 2004-10-04
+8      2.1 2005-04-18
+9     2.11 2010-04-22
+10    2.13 2011-04-14
+11    2.14 2011-10-31
+12    2.15 2012-03-30
+13     3.0 2013-04-03
+
+> ## ----extracting the toc with the pipe makes the flow easier to read------
+> r_lang_URL %>%                 # take the URL
++   read_html() %>%              # read the HTML source
++   html_nodes("#toc") %>%       # extract the node with id 'toc'
++   html_nodes("ul li a") %>%    # extract the ul / li / a tags
++   html_text                    # extract the link text
+ [1] "1 History"                              
+ [2] "2 Statistical features"                 
+ [3] "3 Programming features"                 
+ [4] "4 Packages"                             
+ [5] "5 Milestones"                           
+ [6] "6 Interfaces"                           
+ [7] "7 Implementations"                      
+ [8] "8 useR! conferences"                    
+ [9] "9 R Journal"                            
+[10] "10 Comparison with SAS, SPSS, and Stata"
+[11] "11 Commercial support for R"            
+[12] "12 Examples"                            
+[13] "12.1 Basic syntax"                      
+[14] "12.2 Structure of a function"           
+[15] "12.3 Mandelbrot set"                    
+[16] "13 See also"                            
+[17] "14 References"                          
+[18] "15 External links"                      
+
+> ## ----tabulating elements of each value-----------------------------------
+> table(iris$Species) 
+
+    setosa versicolor  virginica 
+        50         50         50 
+
+> ## ----converting iris$Species to character before tabulating--------------
+> table(as.character(iris$Species))
+
+    setosa versicolor  virginica 
+        50         50         50 
+
+> ## ----uniqueness respects capitalization----------------------------------
+> table(c("aBc", "Abc", "aBc", "aBc", "Abc"))
+
+aBc Abc 
+  3   2 
+
+> ## ----tabulating numeric values-------------------------------------------
+> table(mtcars$mpg)
+
+10.4 13.3 14.3 14.7   15 15.2 15.5 15.8 16.4 17.3 17.8 18.1 18.7 19.2 19.7   21 
+   2    1    1    1    1    2    1    1    1    1    1    1    1    2    1    2 
+21.4 21.5 22.8 24.4   26 27.3 30.4 32.4 33.9 
+   2    1    2    1    1    1    2    1    1 
+
+> ## ----tabulating numeric values when there are few unique values----------
+> table(mtcars$carb)
+
+ 1  2  3  4  6  8 
+ 7 10  3 10  1  1 
+
+> ## ----printing the first six rows of an object----------------------------
+> head(iris)
+  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2  setosa
+3          4.7         3.2          1.3         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa
+6          5.4         3.9          1.7         0.4  setosa
+
+> ## ----printing the last six rows of an object-----------------------------
+> tail(iris)
+    Sepal.Length Sepal.Width Petal.Length Petal.Width   Species
+145          6.7         3.3          5.7         2.5 virginica
+146          6.7         3.0          5.2         2.3 virginica
+147          6.3         2.5          5.0         1.9 virginica
+148          6.5         3.0          5.2         2.0 virginica
+149          6.2         3.4          5.4         2.3 virginica
+150          5.9         3.0          5.1         1.8 virginica
+
+> ## ----printing a random sample of rows from mtcars------------------------
+> set.seed(1) 
+
+> dplyr::sample_n(mtcars, 6)
+                  mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+Merc 230         22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+Merc 450SE       16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3
+Fiat 128         32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+Porsche 914-2    26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+Valiant          18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+Pontiac Firebird 19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
+
+> ## ----creating sentinel values--------------------------------------------
+> mtcars_qc <- mtcars                      
+
+> mtcars_qc["Maserati Bora", "hp"]         
+[1] 335
+
+> mtcars_qc["Maserati Bora", "hp"] <- 999  
+
+> tail(mtcars_qc)                          
+                mpg cyl  disp  hp drat    wt qsec vs am gear carb
+Porsche 914-2  26.0   4 120.3  91 4.43 2.140 16.7  0  1    5    2
+Lotus Europa   30.4   4  95.1 113 3.77 1.513 16.9  1  1    5    2
+Ford Pantera L 15.8   8 351.0 264 4.22 3.170 14.5  0  1    5    4
+Ferrari Dino   19.7   6 145.0 175 3.62 2.770 15.5  0  1    5    6
+Maserati Bora  15.0   8 301.0 999 3.54 3.570 14.6  0  1    5    8
+Volvo 142E     21.4   4 121.0 109 4.11 2.780 18.6  1  1    4    2
+
+> ## ----filtering to just the rows with a sentinel value in the hp column----
+> mtcars_qc[mtcars_qc$hp == 999, ] 
+              mpg cyl disp  hp drat   wt qsec vs am gear carb
+Maserati Bora  15   8  301 999 3.54 3.57 14.6  0  1    5    8
+
+> ## ----filtering out records with sentinel values in the hp column---------
+> tail(mtcars_qc[mtcars_qc$hp != 999, ])
+                mpg cyl  disp  hp drat    wt qsec vs am gear carb
+Fiat X1-9      27.3   4  79.0  66 4.08 1.935 18.9  1  1    4    1
+Porsche 914-2  26.0   4 120.3  91 4.43 2.140 16.7  0  1    5    2
+Lotus Europa   30.4   4  95.1 113 3.77 1.513 16.9  1  1    5    2
+Ford Pantera L 15.8   8 351.0 264 4.22 3.170 14.5  0  1    5    4
+Ferrari Dino   19.7   6 145.0 175 3.62 2.770 15.5  0  1    5    6
+Volvo 142E     21.4   4 121.0 109 4.11 2.780 18.6  1  1    4    2
+
+> ## ----summary gives us an overview of an object---------------------------
+> summary(mtcars_qc[ , 2:5]) 
+      cyl             disp             hp             drat      
+ Min.   :4.000   Min.   : 71.1   Min.   : 52.0   Min.   :2.760  
+ 1st Qu.:4.000   1st Qu.:120.8   1st Qu.: 96.5   1st Qu.:3.080  
+ Median :6.000   Median :196.3   Median :123.0   Median :3.695  
+ Mean   :6.188   Mean   :230.7   Mean   :167.4   Mean   :3.597  
+ 3rd Qu.:8.000   3rd Qu.:326.0   3rd Qu.:180.0   3rd Qu.:3.920  
+ Max.   :8.000   Max.   :472.0   Max.   :999.0   Max.   :4.930  
+
+> ## ----checking for finiteness of several vectors--------------------------
+> any(!is.finite(c(1, 2, 3, 4)))
+[1] FALSE
+
+> any(!is.finite(c(1, 2, NA, 4)))
+[1] TRUE
+
+> any(!is.finite(c(1, 2, NaN, 4)))
+[1] TRUE
+
+> any(!is.finite(c(1, 2, Inf, 4)))
+[1] TRUE
+
+> ## ----loading and attaching the tidyr package-----------------------------
+> # install.packages("tidyr")
+> library(tidyr)
+
+> ## ----printing the long_df object we created earlier----------------------
+> long_df
+        id variable value
+1  person1   height 151.8
+2  person2   height 139.7
+3  person3   height 136.5
+4  person1   weight  47.8
+5  person2   weight  36.5
+6  person3   weight  31.9
+7  person1      age  63.0
+8  person2      age  63.0
+9  person3      age  65.0
+10 person1     male   1.0
+11 person2     male   0.0
+12 person3     male   0.0
+
+> ## ----converting from long to wide data-----------------------------------
+> wide_df <- spread(data = long_df, key = variable, value = value)
+
+> wide_df
+       id age height male weight
+1 person1  63  151.8    1   47.8
+2 person2  63  139.7    0   36.5
+3 person3  65  136.5    0   31.9
+
+> ## ------------------------------------------------------------------------
+> long_df_again <- gather(
++   data  = wide_df, 
++   key   = "variable", 
++   value = "value",    
++   -id                 
++ )
+
+> long_df_again
+        id variable value
+1  person1      age  63.0
+2  person2      age  63.0
+3  person3      age  65.0
+4  person1   height 151.8
+5  person2   height 139.7
+6  person3   height 136.5
+7  person1     male   1.0
+8  person2     male   0.0
+9  person3     male   0.0
+10 person1   weight  47.8
+11 person2   weight  36.5
+12 person3   weight  31.9
+
+> ## ----reshaping from long to wide with a confusing syntax-----------------
+> reshape(
++   long_df,
++   idvar = "id",
++   timevar = "variable",
++   direction = "wide"
++ )
+       id value.height value.weight value.age value.male
+1 person1        151.8         47.8        63          1
+2 person2        139.7         36.5        63          0
+3 person3        136.5         31.9        65          0
+
+> ## ----load and attach the reshape2 package--------------------------------
+> # install.packages("reshape2")
+> library(reshape2) 
+
+> ## ----casting from long to wide with a formula interface------------------
+> dcast(long_df, id ~ variable)
+       id age height male weight
+1 person1  63  151.8    1   47.8
+2 person2  63  139.7    0   36.5
+3 person3  65  136.5    0   31.9
+
+> ## ----creating a data.frame with repeated measurements--------------------
+> rep_df <- data.frame(
++   name = c("x", "y", "y", "z", "x"),
++   val1 = c(3, 5, 5, 4, 8),
++   val2 = c(9, 2, 2, 1, 1),
++   val3 = c("q", "r", "r", "s", "t")
++ )
+
+> rep_df
+  name val1 val2 val3
+1    x    3    9    q
+2    y    5    2    r
+3    y    5    2    r
+4    z    4    1    s
+5    x    8    1    t
+
+> ## ----detecting duplicate rows--------------------------------------------
+> duplicated(rep_df)
+[1] FALSE FALSE  TRUE FALSE FALSE
+
+> ## ----detecting duplicates starting from the last row---------------------
+> duplicated(rep_df, fromLast = TRUE)
+[1] FALSE  TRUE FALSE FALSE FALSE
+
+> ## ----removing duplicates by excluding their rows-------------------------
+> rep_df[!duplicated(rep_df), ]
+  name val1 val2 val3
+1    x    3    9    q
+2    y    5    2    r
+4    z    4    1    s
+5    x    8    1    t
+
+> ## ----a shortcut to removing duplicates keeping only unique rows----------
+> unique(rep_df)
+  name val1 val2 val3
+1    x    3    9    q
+2    y    5    2    r
+4    z    4    1    s
+5    x    8    1    t
+
+> ## ----detecting duplicates in a single column-----------------------------
+> unique(rep_df$val2)
+[1] 9 2 1
+
+> ## ----a tibble containing countries and capitals--------------------------
+> # install.packages("tibble") 
+> library(tibble)
+
+> countries_capitals <- tribble(     
++   ~Country,      ~Capital,
++   "Australia",   "Canberra",
++   "France",      "Paris",
++   "Malaysia",    "Kuala Lumpur",
++   "India",       "New Delhi",
++   "Nauru",       NA,               
++   "Russia",      "Moscow",
++   "Switzerland", NA,               
++   "Zimbabwe",    "Harare"
++ )
+
+> ## ----a tibble containing cities and populations--------------------------
+> cities_populations <- tribble(
++         ~City, ~Population,
++   "New Delhi",   16787949L,
++   "Moscow",      11541000L,
++   "Paris",        2241346L,
++   "Harare",       1487028L,
++   "Kuala Lumpur", 1381830L,
++   "Dublin",       1173179L,
++   "Ottawa",        898150L,
++   "Wellington",    405000L,
++   "Canberra",      354644L
++ )
+
+> ## ----loading and attaching the dplyr package-----------------------------
+> # install.packages("dplyr")
+> library(dplyr)
+
+> ## ----performing a full join on the countries and populations-------------
+> full_join(
++   countries_capitals,        
++   cities_populations,        
++   by = c("Capital" = "City") 
++ )
+# A tibble: 11 x 3
+   Country     Capital      Population
+   <chr>       <chr>             <int>
+ 1 Australia   Canberra         354644
+ 2 France      Paris           2241346
+ 3 Malaysia    Kuala Lumpur    1381830
+ 4 India       New Delhi      16787949
+ 5 Nauru       <NA>                 NA
+ 6 Russia      Moscow         11541000
+ 7 Switzerland <NA>                 NA
+ 8 Zimbabwe    Harare          1487028
+ 9 <NA>        Dublin          1173179
+10 <NA>        Ottawa           898150
+11 <NA>        Wellington       405000
+
+> ## ----joining two tibbles with not-quite-matching data--------------------
+> dataA <- tribble(
++   ~name, ~value,
++   "x", 1,
++   "y", 2,
++   "z", 3
++ )
+
+> dataB <- tribble(
++   ~name, ~other_value,
++   "x", 4,
++   "Y", 5,               
++   "z", 6
++ )
+
+> full_join(dataA, dataB)
+# A tibble: 4 x 3
+  name  value other_value
+  <chr> <dbl>       <dbl>
+1 x      1.00        4.00
+2 y      2.00       NA   
+3 z      3.00        6.00
+4 Y     NA           5.00
+
+> ## ----joining two tibbles when values are repeated------------------------
+> dataA <- tribble(
++   ~name, ~value,
++   "x", 1.1,
++   "x", 1.2,
++   "y", 2,
++   "z", 3
++ )
+
+> dataB <- tribble(
++   ~name, ~other_value,
++   "x", 4,
++   "y", 5,
++   "z", 6
++ )
+
+> full_join(dataA, dataB)
+# A tibble: 4 x 3
+  name  value other_value
+  <chr> <dbl>       <dbl>
+1 x      1.10        4.00
+2 x      1.20        4.00
+3 y      2.00        5.00
+4 z      3.00        6.00
+
+> ## ----joining two tibbles but keeping rows present in the leftmost one----
+> left_join(
++   countries_capitals,
++   cities_populations,
++   by = c("Capital" = "City")
++ )
+# A tibble: 8 x 3
+  Country     Capital      Population
+  <chr>       <chr>             <int>
+1 Australia   Canberra         354644
+2 France      Paris           2241346
+3 Malaysia    Kuala Lumpur    1381830
+4 India       New Delhi      16787949
+5 Nauru       <NA>                 NA
+6 Russia      Moscow         11541000
+7 Switzerland <NA>                 NA
+8 Zimbabwe    Harare          1487028
+
+> ## ----joining two tibbles but keeping rows present in the rightmost one----
+> right_join(
++   countries_capitals,        
++   cities_populations,        
++   by = c("Capital" = "City") 
++ )
+# A tibble: 9 x 3
+  Country   Capital      Population
+  <chr>     <chr>             <int>
+1 India     New Delhi      16787949
+2 Russia    Moscow         11541000
+3 France    Paris           2241346
+4 Zimbabwe  Harare          1487028
+5 Malaysia  Kuala Lumpur    1381830
+6 <NA>      Dublin          1173179
+7 <NA>      Ottawa           898150
+8 <NA>      Wellington       405000
+9 Australia Canberra         354644
+
+> ## ----joining two tibbles but only keeping rows which appear in both------
+> inner_join(
++   countries_capitals,        
++   cities_populations,        
++   by = c("Capital" = "City") 
++ )
+# A tibble: 6 x 3
+  Country   Capital      Population
+  <chr>     <chr>             <int>
+1 Australia Canberra         354644
+2 France    Paris           2241346
+3 Malaysia  Kuala Lumpur    1381830
+4 India     New Delhi      16787949
+5 Russia    Moscow         11541000
+6 Zimbabwe  Harare          1487028
+
+> ## ----joining two tibbles but only keeping those not in the second--------
+> anti_join(
++   countries_capitals,        
++   cities_populations,        
++   by = c("Capital" = "City") 
++ )
+# A tibble: 2 x 2
+  Country     Capital
+  <chr>       <chr>  
+1 Nauru       <NA>   
+2 Switzerland <NA>   
+
+> ## ----joining two tibbles but only keeping those not in the second with the order reversed----
+> anti_join(
++   cities_populations,        
++   countries_capitals,        
++   by = c("City" = "Capital") 
++ )
+# A tibble: 3 x 2
+  City       Population
+  <chr>           <int>
+1 Dublin        1173179
+2 Ottawa         898150
+3 Wellington     405000
+
+> ## ----base merging--------------------------------------------------------
+> merge(
++   countries_capitals, 
++   cities_populations,
++   by.x = "Capital",   
++   by.y = "City"       
++ )
+       Capital   Country Population
+1     Canberra Australia     354644
+2       Harare  Zimbabwe    1487028
+3 Kuala Lumpur  Malaysia    1381830
+4       Moscow    Russia   11541000
+5    New Delhi     India   16787949
+6        Paris    France    2241346
+
+> ## ----using all to specify a full_join()----------------------------------
+> merge(
++   countries_capitals,
++   cities_populations,
++   by.x = "Capital",
++   by.y = "City",
++   all = TRUE
++ )
+        Capital     Country Population
+1      Canberra   Australia     354644
+2        Dublin        <NA>    1173179
+3        Harare    Zimbabwe    1487028
+4  Kuala Lumpur    Malaysia    1381830
+5        Moscow      Russia   11541000
+6     New Delhi       India   16787949
+7        Ottawa        <NA>     898150
+8         Paris      France    2241346
+9    Wellington        <NA>     405000
+10         <NA>       Nauru         NA
+11         <NA> Switzerland         NA
+
+> ## ----using all.x to specify a left_join()--------------------------------
+> merge(
++   countries_capitals,
++   cities_populations,
++   by.x = "Capital",
++   by.y = "City",
++   all.x = TRUE
++ )
+       Capital     Country Population
+1     Canberra   Australia     354644
+2       Harare    Zimbabwe    1487028
+3 Kuala Lumpur    Malaysia    1381830
+4       Moscow      Russia   11541000
+5    New Delhi       India   16787949
+6        Paris      France    2241346
+7         <NA>       Nauru         NA
+8         <NA> Switzerland         NA
+
+> ## ----saving a variable into an RData file, eval = FALSE------------------
+> ## z <- 3
+> ## save(mtcars, z, iris, file = "example_data_YYMMDD.RData")
+> 
+> ## ----loading data from an RData file, eval = FALSE-----------------------
+> ## load(file = "example_data_YYMMDD.RData")
+> 
+> ## ----saving data into an rds file, eval = FALSE--------------------------
+> ## fruits <- c("strawberries", "apples", "watermelon")
+> ## saveRDS(fruits, file = "red_fruits.rds")
+> 
+> ## ----reading data from an rds file, eval = FALSE-------------------------
+> ## readRDS(file = "red_fruits.rds")
+> 
+> ## ----using the data stored in an rds file inline, eval = FALSE-----------
+> ## fruit_salad <- c("banana", "grapes", readRDS(file = "red_fruits.rds"))
+> ## fruit_salad
+> 
+> ## ----creating a data.frame to export via dput----------------------------
+> mixed_type_df <- data.frame(
++   ints  = 1:4,                    
++   nums  = 2.5:5.5,                
++   facts = factor(letters[23:26]), 
++   chars = state.ab .... [TRUNCATED] 
+
+> mixed_type_df
+  ints nums facts chars
+1    1  2.5     w    AL
+2    2  3.5     x    AK
+3    3  4.5     y    AZ
+4    4  5.5     z    AR
+
+> ## ----printing the structure of mixed_type_df-----------------------------
+> str(mixed_type_df)
+'data.frame':	4 obs. of  4 variables:
+ $ ints : int  1 2 3 4
+ $ nums : num  2.5 3.5 4.5 5.5
+ $ facts: Factor w/ 4 levels "w","x","y","z": 1 2 3 4
+ $ chars: chr  "AL" "AK" "AZ" "AR"
+
+> ## ----dput outputs the entire structural framework sufficient to rebuild an object----
+> dput(mixed_type_df)
+structure(list(ints = 1:4, nums = c(2.5, 3.5, 4.5, 5.5), facts = structure(1:4, .Label = c("w", 
+"x", "y", "z"), class = "factor"), chars = c("AL", "AK", "AZ", 
+"AR")), .Names = c("ints", "nums", "facts", "chars"), row.names = c(NA, 
+-4L), class = "data.frame")
+
+> ## ----a nicer layout of the dput output-----------------------------------
+> mixed_type_df <- structure(
++   list(ints = 1:4, 
++        nums = c(2.5, 3.5, 4.5, 5.5), 
++        facts = structure(
++          1:4, 
++          .Label = c("w", "x", "y", "z"), 
++          class = "factor"
++        ), 
++        chars = c("AL", "AK", "AZ", "AR")
++   ), 
++   .Names = c("ints", "nums", "facts", "chars"), 
++   row.names = c(NA, -4L), class = "data.frame"
++ )
+
+> mixed_type_df
+  ints nums facts chars
+1    1  2.5     w    AL
+2    2  3.5     x    AK
+3    3  4.5     y    AZ
+4    4  5.5     z    AR
+
+> ## ----saving an object to a csv file--------------------------------------
+> write.csv(mtcars, file = "mtcars.csv")
+> 
+> 

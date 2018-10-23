@@ -1,0 +1,419 @@
+> library('knitr'); source('RGlobal.R'); source('chapter02.R', echo=TRUE, print.eval=TRUE, keep.source=TRUE, max.deparse=1e3)
+
+> ## ----entering a value into the Console-----------------------------------
+> 3.2
+[1] 3.2
+
+> ## ----str() shows the structure of an object------------------------------
+> str(object = 3.2)
+ num 3.2
+
+> ## ----simply not having a decimal does not make a number an integer-------
+> str(object = 7)
+ num 7
+
+> ## ----trying to define something as an integer is not good enough---------
+> str(object = 7.0)
+ num 7
+
+> ## ----use an L after a number to define an integer------------------------
+> str(object = 7L)
+ int 7
+
+> ## ----typeof() shows the type of an object e.g. numeric or integer--------
+> typeof(x = 7)
+[1] "double"
+
+> ## ----this fails because typeof() does not have an object argument, eval = FALSE----
+> ## typeof(object = 7)
+> 
+> ## ----typeof() returns integer when we use the L suffix-------------------
+> typeof(x = 7L)
+[1] "integer"
+
+> ## ----all of these look the same on the screen which is not ideal---------
+> 7
+[1] 7
+
+> 7.0
+[1] 7
+
+> 7L
+[1] 7
+
+> ## ----we can make large values using an exponent e or E-------------------
+> 5e6 
+[1] 5e+06
+
+> ## ----exponents can follow decimal values---------------------------------
+> 1.2e6
+[1] 1200000
+
+> ## ----the exponent follows through if we are more precise-----------------
+> 3.14159e3
+[1] 3141.59
+
+> ## ----typeof() shows that this is an integer------------------------------
+> typeof(x = 1.2e6L)
+[1] "integer"
+
+> ## ----this will fail because R will not understand the commas, eval = FALSE----
+> ## 1,200,000
+> 
+> ## ----strings are of type char (short for character)----------------------
+> str(object = "apple")
+ chr "apple"
+
+> ## ----a blank string is still a character object--------------------------
+> str(object = "")
+ chr ""
+
+> ## ----use slashes to escape quotes----------------------------------------
+> "The sign said, \"Walk\"."
+[1] "The sign said, \"Walk\"."
+
+> ## ----use a mixture of quote types when referring to spoken text----------
+> "The sign said, 'Walk'."
+[1] "The sign said, 'Walk'."
+
+> ## ----double quotes can quote single quotes or apostrophes----------------
+> "That's John's father's name."
+[1] "That's John's father's name."
+
+> ## ----double quotes will be escaped if they are inside single quotes------
+> 'The sign said, "Walk".'
+[1] "The sign said, \"Walk\"."
+
+> ## ----special characters such as newlines do special things when printed----
+> cat('\'Special characters\'\ndo \'special things\'')
+'Special characters'
+do 'special things'
+> ## ----factors are ordered alphabetically and labeled by integers----------
+> str(object =                                     
++   factor(x =                                     
++          c( "John", "Paul", "George", "Ringo" )  
++   ) 
++ )
+ Factor w/ 4 levels "George","John",..: 2 3 1 4
+
+> ## ----the order of factor levels are alphabetical by default--------------
+> str(object = factor(x = c("medium", "small", "large")))
+ Factor w/ 3 levels "large","medium",..: 2 3 1
+
+> ## ----specifying ordered means this becomes an ordered factor-------------
+> sizes <- factor(x       = c("medium", "small", "large"), 
++                 levels  = c("small", "medium", "large"),
++                 ordered = TRUE)
+
+> str(object = sizes)
+ Ord.factor w/ 3 levels "small"<"medium"<..: 2 1 3
+
+> ## ----table() shows the counts of each level------------------------------
+> table(sizes)
+sizes
+ small medium  large 
+     1      1      1 
+
+> ## ----check the levels of a factor to ensure they are what you think------
+> levels(x = sizes)
+[1] "small"  "medium" "large" 
+
+> ## ----the current time, as the system understands it----------------------
+> str(object = Sys.time())
+ POSIXct[1:1], format: "2018-01-21 21:46:18"
+
+> ## ----the current date as the system understands it-----------------------
+> str(object = Sys.Date())
+ Date[1:1], format: "2018-01-21"
+
+> ## ----formatting a date object with special codes-------------------------
+> format(x = Sys.time(), format = "%Y")
+[1] "2018"
+
+> ## ----logical values are of type logi meaning logical---------------------
+> str(object = TRUE)
+ logi TRUE
+
+> ## ----printing with and without the quote option--------------------------
+> print(x = "abc")
+[1] "abc"
+
+> print(x = "abc", quote = FALSE)
+[1] abc
+
+> ## ----by default NA is a logical type-------------------------------------
+> typeof(x = NA)
+[1] "logical"
+
+> ## ----assigning the value 4 to the variable x-----------------------------
+> x <- 4
+
+> ## ----assignment does not visibly return a value so it prints nothing-----
+> no_return <- 7
+
+> ## ----surrounding with parentheses----------------------------------------
+> (return_me <- 7)
+[1] 7
+
+> ## ----printing the value of x---------------------------------------------
+> print(x = x)
+[1] 4
+
+> ## ----when an object is evaluated by itself it is printed-----------------
+> x
+[1] 4
+
+> ## ----column names of the mtcars dataset----------------------------------
+> colnames(x = mtcars)
+ [1] "mpg"  "cyl"  "disp" "hp"   "drat" "wt"   "qsec" "vs"   "am"   "gear"
+[11] "carb"
+
+> ## ----assigning another variable------------------------------------------
+> y <- 8
+
+> ## ---- eval = FALSE-------------------------------------------------------
+> ## 2b <- 7
+> 
+> ## ----defining an otherwise invalid variable with quotes------------------
+> "2b" <- 7
+
+> 7 + `2b`
+[1] 14
+
+> ## ----variable names can include spaces when quoted-----------------------
+> `to be or not to be` <- 2
+
+> 7 + `to be or not to be`
+[1] 9
+
+> ## ----text in quotes just produces a character object---------------------
+> "2b"
+[1] "2b"
+
+> ## ----quote-defined variables can be referenced with backticks------------
+> `2b`
+[1] 7
+
+> ## ----the variable pi is defined in the base package----------------------
+> pi <- 3L 
+
+> base::pi 
+[1] 3.141593
+
+> ## ----we can add variables in the way we would add values-----------------
+> x + y
+[1] 12
+
+> ## ----we can change the type of variables whenever we like----------------
+> y <- "banana"
+
+> y
+[1] "banana"
+
+> ## ----we can add variables in the same way we add numbers-----------------
+> a1 <- 4
+
+> a2 <- 8
+
+> sum_of_a1_and_a2 <- a1 + a2
+
+> ## ----the result of adding variables is what we expect from adding their values----
+> print(x = sum_of_a1_and_a2)
+[1] 12
+
+> ## ----changing the value of a variable does not change any other variables----
+> a2 <- 7
+
+> ## ----the value of sum_of_a_and_b is unchanged despite changing b---------
+> print(x = sum_of_a1_and_a2)
+[1] 12
+
+> ## ----we use the equals sign to specify arguments to functions------------
+> str(object = mtcars, indent.str = "INDENT>>  ")
+'data.frame':	32 obs. of  11 variables:
+INDENT>>  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+INDENT>>  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+INDENT>>  $ disp: num  160 160 108 258 360 ...
+INDENT>>  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+INDENT>>  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+INDENT>>  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+INDENT>>  $ qsec: num  16.5 17 18.6 19.4 17 ...
+INDENT>>  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+INDENT>>  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+INDENT>>  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+INDENT>>  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...
+
+> ## ----assigning values to variables---------------------------------------
+> score <- 4.8
+
+> score
+[1] 4.8
+
+> str(object = score)
+ num 4.8
+
+> fruit <- "banana"
+
+> fruit
+[1] "banana"
+
+> str(object = fruit)
+ chr "banana"
+
+> ## ----we can align assignments with whitespace----------------------------
+> first_name <- "John"
+
+> last_name  <- "Smith"
+
+> top_points <- 23
+
+> ## ----assigning a value to a variable-------------------------------------
+> a <- "x"
+
+> ## ----accidentally adding a space changes the assignment operator into a comparison----
+> a < - 3 
+[1] FALSE
+
+> ## ----integers need to be specified not assumed---------------------------
+> myInt <- 3
+
+> str(object = myInt) 
+ num 3
+
+> ## ----specifying an integer assingnment-----------------------------------
+> myInt <- 3L
+
+> str(object = myInt) 
+ int 3
+
+> ## ----converting a number to a character string---------------------------
+> numAsString <- as.character(x = 1234)
+
+> str(object = numAsString)
+ chr "1234"
+
+> ## ----quotes make any value into a character string-----------------------
+> numAsString <- "1234"
+
+> ## ----converting a stored number to a character string--------------------
+> num <- 1234
+
+> numAsString <- as.character(x = num)
+
+> str(object = numAsString)
+ chr "1234"
+
+> ## ----integer and numeric types are indistinguishable as characters-------
+> as.character(x = 7)
+[1] "7"
+
+> as.character(x = 7L)
+[1] "7"
+
+> ## ----converting from character to numeric works when unambiguous---------
+> stringAsNum <- as.numeric(x = "3.14159")
+
+> str(object = stringAsNum) 
+ num 3.14
+
+> ## ----printed values may show fewer decimal places------------------------
+> print(x = stringAsNum)
+[1] 3.14159
+
+> ## ----converting a numeric type to integer manually-----------------------
+> myInt <- as.integer(x = 7)
+
+> str(object = myInt) 
+ int 7
+
+> ## ----converting to integers means rounding one way or another------------
+> as.integer(x = 3.14)
+[1] 3
+
+> ## ----rounding may not behave the way you expect--------------------------
+> as.integer(x = 2.99)
+[1] 2
+
+> ## ----negative numbers also round towards zero----------------------------
+> as.integer(x = -22.6)
+[1] -22
+
+> ## ----unambiguous or simple conversions typically work--------------------
+> as.integer(x = " -47.8  ") 
+[1] -47
+
+> ## ----difficult to parse expressions do not convert to character strings----
+> as.integer(x = "--92.4")
+[1] NA
+
+> ## ----when not converting to characters R will follow rules to figure this out----
+> as.integer(x = --92.4)
+[1] 92
+
+> ## ----complicated numbers can convert to character easily enough----------
+> as.character(x = 2342.983)
+[1] "2342.983"
+
+> ## ----factor levels can be numbers or integer or just about anything------
+> dozens <- factor(x = c(36L, 24L, 12L, 48L))
+
+> dozens
+[1] 36 24 12 48
+Levels: 12 24 36 48
+
+> ## ----as.integer on a factor returns the level indices--------------------
+> as.integer(x = dozens)
+[1] 3 2 1 4
+
+> ## ----we need to convert to character before extracting the numeric values----
+> as.integer(x = as.character(x = dozens))
+[1] 36 24 12 48
+
+> ## ----0 converts to FALSE while other numbers convert to TRUE-------------
+> as.logical(x = 0)
+[1] FALSE
+
+> as.logical(x = 1)
+[1] TRUE
+
+> ## ----strings convert to NA when converting to logical type---------------
+> as.logical(x = "value")
+[1] NA
+
+> ## ----be careful with the value T as it can mean TRUE---------------------
+> as.logical(x = "R")
+[1] NA
+
+> as.logical(x = "S")
+[1] NA
+
+> as.logical(x = "T")
+[1] TRUE
+
+> ## ----highlighting the difference between POSIXct and Date types----------
+> as.Date(x = Sys.time())
+[1] "2018-01-21"
+
+> as.POSIXct(x = Sys.time()) 
+[1] "2018-01-21 21:46:18 ACDT"
+
+> ## ----some well-documented code-------------------------------------------
+> # Here we are using a=2 because it provides the 
+> # best agreement with the data. 
+> a <- 2
+
+> # cosmological constant:
+> # ratio of dark energy pressure to energy per unit volume
+> w <- -1
+
+> y <- w + a # TODO: cross-check this with formula in Einstein (1917) 
+
+> z <- log(x = y) # values of y are assumed to be positive and 
+
+>                 # non-zero at this point, so this should be 
+>                 # safe. 
+> 
+> #x <- z - 1 
+> 
+> 
+> 

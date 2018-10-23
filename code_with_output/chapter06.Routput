@@ -1,0 +1,1273 @@
+> library('knitr'); source('RGlobal.R'); source('chapter06.R', echo=TRUE, print.eval=TRUE, keep.source=TRUE, max.deparse=1e3)
+
+> ## ----test whether a string starts with a prefix--------------------------
+> startsWith(x = "banana", prefix = "b")
+[1] TRUE
+
+> ## ----test whether a string ends with a suffix----------------------------
+> endsWith(x = "apple", suffix = "e")
+[1] TRUE
+
+> ## ----startsWith() will not ignore whitespace-----------------------------
+> startsWith(" banana", "b") 
+[1] FALSE
+
+> ## ----startsWith() is case-sensitive--------------------------------------
+> startsWith("Apple", "a")
+[1] FALSE
+
+> ## ----the prefix can be several characters long---------------------------
+> startsWith("carpet", "car")
+[1] TRUE
+
+> ## ----searching for a substring-------------------------------------------
+> grep(
++   pattern = "nan", 
++   x       = "banana", 
++   value   = TRUE  # <1>
++ )
+[1] "banana"
+
+> ## ----testing whether a substring can be found----------------------------
+> grepl("app", "apple")
+[1] TRUE
+
+> ## ----vectorised testing for substrings-----------------------------------
+> grepl(pattern = "meow", x = c("meowing", "meowed", "homeowner"))
+[1] TRUE TRUE TRUE
+
+> ## ----returning strings which match the pattern---------------------------
+> grep("car", c("cradle", "cartoon", "carpet"), value = TRUE)
+[1] "cartoon" "carpet" 
+
+> ## ----returning the index of strings which match the pattern--------------
+> grep("car", c("cradle", "scary", "carpet", "Carroll"))
+[1] 2 3
+
+> ## ----load and attach the stringr package---------------------------------
+> # install.packages("stringr")
+> library(stringr)
+
+> ## ----viewing matches in the Viewer pane, eval = FALSE--------------------
+> ## # install.packages("htmlwidgets") 
+> ## str_view(c("cradle", "scary", "carpet", "Carroll"), "car")
+> 
+> ## ----vectorised extraction of first letters------------------------------
+> substr(x = c("You", "Only", "Live", "Once"), start = 1, stop = 1)
+[1] "Y" "O" "L" "O"
+
+> ## ----extracting the first three letters of a string----------------------
+> substr("carpet", 1, 3)
+[1] "car"
+
+> ## ----extracting the last three letters by starting at letter 4-----------
+> substring("carpet", 4)
+[1] "pet"
+
+> ## ----substituting a substring--------------------------------------------
+> sub(pattern = "pet", replacement = "tography", x = "carpet")
+[1] "cartography"
+
+> ## ----substituting the first l with an L----------------------------------
+> sub(" l", " L", "the Tower of london is located on the north bank of the Thames.") 
+[1] "the Tower of London is located on the north bank of the Thames."
+
+> ## ----substituting all instances of mrs with Mrs--------------------------
+> gsub("mrs", "Mrs", "mrs smith, mrs jones, and mrs martin.")
+[1] "Mrs smith, Mrs jones, and Mrs martin."
+
+> ## ----substituting all single quotes with double quotes-------------------
+> gsub("\'", "\"", "He said 'Hello'")
+[1] "He said \"Hello\""
+
+> ## ----replacing commas with nothing---------------------------------------
+> str_replace_all("1,200,000", ",", "")
+[1] "1200000"
+
+> ## ----substituting a specific number with a z-----------------------------
+> sub(pattern = "3", replacement = "z", x = "xy3")
+[1] "xyz"
+
+> ## ----substituting any digit with a z-------------------------------------
+> sub(pattern = "\\d", replacement = "z", x = "xy8") 
+[1] "xyz"
+
+> ## ----finding strings matching either Car or car--------------------------
+> grep("[Cc]ar", c("cradle", "scary", "carpet", "Carroll"), value = TRUE) 
+[1] "scary"   "carpet"  "Carroll"
+
+> ## ----finding and returning strings matching Carr or carr-----------------
+> grep("[Cc]ar{2}", c("cradle", "scary", "carpet", "Carroll"), value = TRUE) 
+[1] "Carroll"
+
+> ## ----viewing the matches in the Viewer pane, eval = FALSE----------------
+> ## str_view_all("xy23yx878xyx9yxy", "\\d{2}") ## two digits in a row
+> 
+> ## ----load and attach the rex package-------------------------------------
+> # install.packages("rex")
+> library(rex)
+
+> ## ----rex helps to build regex commands with an R syntax------------------
+> matching_regex <- rex(
++   start,
++   n_times(letter, 3),
++   n_times(digit, 1),
++   any_lowers
++ )
+
+> matching_regex
+^(?:[[:alpha:]]){3}(?:[[:digit:]]){1}[[:lower:]]*
+
+> ## ----viewing regex matches in the Viewer pane, eval = FALSE--------------
+> ## possible_strings <- c("xyzabc9?AB", "JDC8xyzabc", "SC?0abcxyz")
+> ## str_view(possible_strings, matching_regex)
+> 
+> ## ----a vector which we would like to select only part of-----------------
+> vec <- c(21, 23, 25, 27, 29)
+
+> ## ----selecting the second element of vec---------------------------------
+> vec[2]
+[1] 23
+
+> ## ----selecting the second and fifth elements of vec----------------------
+> vec[c(2, 5)]
+[1] 23 29
+
+> ## ----selecting a sequence of elements of vec-----------------------------
+> vec[2:4]
+[1] 23 25 27
+
+> ## ----selecting every element of vec except the second--------------------
+> vec[-2]
+[1] 21 25 27 29
+
+> ## ----selecting every element of vec except the second or third-----------
+> vec[-c(2, 3)]
+[1] 21 27 29
+
+> ## ----selecting all the elements of vec explicitly------------------------
+> vec[]
+[1] 21 23 25 27 29
+
+> ## ----selecting the second and third elements of an unnamed vector--------
+> c(32, 34, 36, 38)[c(2, 3)]
+[1] 34 36
+
+> ## ----this will fail because square brackets can only select one value, eval = FALSE----
+> ## vec[[c(1, 2)]]
+> 
+> ## ----a named vector------------------------------------------------------
+> named_vec <- c(x = 21, y = 23, z = 25)
+
+> ## ----selecting the second element (with its name) of named_vec-----------
+> named_vec[2]
+ y 
+23 
+
+> ## ----selecting the second element (without its name) of named_vec--------
+> named_vec[[2]]
+[1] 23
+
+> ## ----selecting the elements of named_vec named x and y-------------------
+> named_vec[c("x", "y")]
+ x  y 
+21 23 
+
+> ## ----selecting the element of named_vec named y--------------------------
+> named_vec[["y"]]
+[1] 23
+
+> ## ----non-integers will select as if passed to as.integer-----------------
+> letters[c(1.3, 1.5, 1.7, 2.1)]
+[1] "a" "a" "a" "b"
+
+> ## ----attempting to select the zero element from a vector is silent-------
+> letters[0]
+character(0)
+
+> ## ----attempting to select an element beyond the length of a vector-------
+> letters[99]
+[1] NA
+
+> ## ----attempting to select the NAth element leads to lots of NAs----------
+> named_vec[NA]
+<NA> <NA> <NA> 
+  NA   NA   NA 
+
+> ## ----selecting with a typed NA actually produces a single NA-------------
+> named_vec[NA_character_]
+<NA> 
+  NA 
+
+> ## ----a list which we would like to select only part of-------------------
+> lst <- list(
++   odd   = c(1, 3, 5),
++   even  = c(2, 4, 6),
++   every = 1:6
++ )
+
+> ## ----selecting the first and second elements of lst----------------------
+> lst[c(1, 2)]
+$odd
+[1] 1 3 5
+
+$even
+[1] 2 4 6
+
+
+> ## ----selecting with a single square bracket returns another list---------
+> typeof(lst[c(1, 2)])
+[1] "list"
+
+> ## ----selecting with single square brackets still produces a list---------
+> typeof(lst[c(1, 2)][2])
+[1] "list"
+
+> ## ----double square brackets return a single element not a list-----------
+> lst[[2]]
+[1] 2 4 6
+
+> typeof(lst[[2]])
+[1] "double"
+
+> ## ----double brackets return a vector from lst which can be further subset----
+> lst[[2]][2]
+[1] 4
+
+> ## ----a nested list which we would like to select only part of------------
+> nested_lst <- list(
++   names = list(
++     first = "Jonathan",
++     last = "Carroll"
++   ),
++   fav_lang = "R"
++ )
+
+> nested_lst
+$names
+$names$first
+[1] "Jonathan"
+
+$names$last
+[1] "Carroll"
+
+
+$fav_lang
+[1] "R"
+
+
+> ## ----double square brackets can take multiple arguments in the case of a nested list----
+> nested_lst[[c(1, 2)]]
+[1] "Carroll"
+
+> ## ----selecting named elements even and odd from lst----------------------
+> lst[c("even", "odd")]
+$even
+[1] 2 4 6
+
+$odd
+[1] 1 3 5
+
+
+> ## ----selecting a single named element from lst---------------------------
+> lst[["even"]]
+[1] 2 4 6
+
+> ## ----selecting deeply nested elements by name----------------------------
+> nested_lst[[c("names", "last")]]
+[1] "Carroll"
+
+> ## ----dollar-name syntax works on lists-----------------------------------
+> lst$odd
+[1] 1 3 5
+
+> ## ----this fails because dollar-name syntax does not work on vectors, eval = FALSE----
+> ## named_vec$a
+> 
+> ## ----partial matching allows names to be shortened-----------------------
+> lst$o
+[1] 1 3 5
+
+> ## ----if insufficient characters are provided the element will not be found----
+> lst$e
+NULL
+
+> ## ----not matching an element returns the same as not partially matching the name----
+> lst$z
+NULL
+
+> ## ----turning on the partial matching warning-----------------------------
+> options(warnPartialMatchDollar = TRUE)
+
+> ## ----now a warning is produced if partial matching occurs----------------
+> lst$o
+[1] 1 3 5
+
+> ## ----double square brackets do not perform partial matching by default----
+> lst[["o"]]
+NULL
+
+> ## ----the option for partial matching can be turned on--------------------
+> lst[["o", exact = FALSE]]
+[1] 1 3 5
+
+> ## ----this is clearer that we are selecting the second element of the element named odd----
+> lst$odd[2]
+[1] 3
+
+> ## ----this makes the structure very clear---------------------------------
+> nested_lst$names$last
+[1] "Carroll"
+
+> ## ----a simple function which creates a list------------------------------
+> make_a_list <- function() {
++   return(list(x = 11, y = 12, z = 13))
++ }
+
+> ## ----evaluating this function creates a list-----------------------------
+> new_list <- make_a_list()
+
+> ## ----selecting the element named y from the newly created list-----------
+> new_list$y
+[1] 12
+
+> ## ----instead of creating another variable the element named z can be selected----
+> make_a_list()$y
+[1] 12
+
+> ## ----neglecting to include the parentheses means we are trying to select from the function body, eval = FALSE----
+> ## make_a_list$y
+> 
+> ## ----a matrix which we would like to select only part of-----------------
+> mat <- matrix(letters[1:12], nrow = 3)
+
+> mat
+     [,1] [,2] [,3] [,4]
+[1,] "a"  "d"  "g"  "j" 
+[2,] "b"  "e"  "h"  "k" 
+[3,] "c"  "f"  "i"  "l" 
+
+> ## ----selecting the third row second column from mat----------------------
+> mat[3, 2]
+[1] "f"
+
+> ## ----selecting the first and third rows and second column from mat-------
+> mat[c(1, 3), 2]
+[1] "d" "f"
+
+> ## ----selecting the first and third rows and second and fourth columns from mat----
+> mat[c(1, 3), c(2, 4)]
+     [,1] [,2]
+[1,] "d"  "j" 
+[2,] "f"  "l" 
+
+> ## ----selecting all rows but the second and third columns-----------------
+> mat[ , c(2, 3)] 
+     [,1] [,2]
+[1,] "d"  "g" 
+[2,] "e"  "h" 
+[3,] "f"  "i" 
+
+> ## ----setting row and column names for mat--------------------------------
+> colnames(mat) <- c("col1", "col2", "col3", "col4")
+
+> rownames(mat) <- c("row1", "row2", "row3")
+
+> mat
+     col1 col2 col3 col4
+row1 "a"  "d"  "g"  "j" 
+row2 "b"  "e"  "h"  "k" 
+row3 "c"  "f"  "i"  "l" 
+
+> ## ----selecting rows and columns by name----------------------------------
+> mat[c("row1", "row3"), c("col2", "col4")]
+     col2 col4
+row1 "d"  "j" 
+row3 "f"  "l" 
+
+> ## ----selecting the single element from a named row and column------------
+> mat[["row2", "col2"]]
+[1] "e"
+
+> ## ----selecting elements with atypical names------------------------------
+> c(x = 7, "y variable" = 8, z = 9)["y variable"]
+y variable 
+         8 
+
+> list(x = 7, ".2b" = 8, z = 9)$`.2b`
+[1] 8
+
+> ## ----replacing the second element of vec with the value 99---------------
+> vec[2] <- 99
+
+> vec
+[1] 21 99 25 27 29
+
+> ## ----coercing a vector by replacing a value------------------------------
+> vec[2] <- "99"
+
+> vec
+[1] "21" "99" "25" "27" "29"
+
+> ## ----replacing the element in the third row second column of mat with 99----
+> mat[3, 2] <- 99 
+
+> mat
+     col1 col2 col3 col4
+row1 "a"  "d"  "g"  "j" 
+row2 "b"  "e"  "h"  "k" 
+row3 "c"  "99" "i"  "l" 
+
+> ## ----a vector of length 5------------------------------------------------
+> vec <- 1:5
+
+> vec
+[1] 1 2 3 4 5
+
+> ## ----selecting beyond the length of vec----------------------------------
+> vec[8]
+[1] NA
+
+> ## ----replacing an element which was not previously defined---------------
+> vec[8] <- 99
+
+> vec
+[1]  1  2  3  4  5 NA NA 99
+
+> ## ----a matrix with two rows----------------------------------------------
+> mat <- matrix(1:8, nrow = 2)
+
+> mat
+     [,1] [,2] [,3] [,4]
+[1,]    1    3    5    7
+[2,]    2    4    6    8
+
+> ## ----attempting to replace an element on the eigth line of mat will fail, eval = FALSE----
+> ## mat[8, 2] <- 99
+> 
+> ## ----providing several replacements at once------------------------------
+> vec <- 1:8
+
+> vec[2:3] <- c(98, 99)
+
+> vec
+[1]  1 98 99  4  5  6  7  8
+
+> ## ----recycling results in all seven values being replaced----------------
+> vec[1:7] <- 0
+
+> vec
+[1] 0 0 0 0 0 0 0 8
+
+> ## ----replacing the first third and fifth elements of 1:6 with 9----------
+> replace(x = 1:6, list = c(1, 3, 5), values = 9)
+[1] 9 2 9 4 9 6
+
+> ## ----replacing an entire column of mat-----------------------------------
+> mat[, 2] <- c(98, 99)
+
+> mat
+     [,1] [,2] [,3] [,4]
+[1,]    1   98    5    7
+[2,]    2   99    6    8
+
+> ## ----selecting the second element of lst---------------------------------
+> lst <- list(
++   odd   = c(1, 3, 5),
++   even  = c(2, 4, 6),
++   every = 1:6
++ )
+
+> lst[[2]]
+[1] 2 4 6
+
+> ## ----replacing the second element of lst with another vector-------------
+> lst[[2]] <- c(8, 10)
+
+> lst
+$odd
+[1] 1 3 5
+
+$even
+[1]  8 10
+
+$every
+[1] 1 2 3 4 5 6
+
+
+> ## ----replacing the element named even with another vector----------------
+> lst$even <- c(10, 12)
+
+> lst
+$odd
+[1] 1 3 5
+
+$even
+[1] 10 12
+
+$every
+[1] 1 2 3 4 5 6
+
+
+> ## ----replacing an element nested within a list---------------------------
+> lst$even[2] <- 100
+
+> lst
+$odd
+[1] 1 3 5
+
+$even
+[1]  10 100
+
+$every
+[1] 1 2 3 4 5 6
+
+
+> ## ----removing an element from a list-------------------------------------
+> lst <- lst[-2]
+
+> lst
+$odd
+[1] 1 3 5
+
+$every
+[1] 1 2 3 4 5 6
+
+
+> ## ----removing an entire vector by replacing it with NULL-----------------
+> lst$every <- NULL
+
+> lst
+$odd
+[1] 1 3 5
+
+
+> ## ----adding elements beyond lengths--------------------------------------
+> lst[[4]] <- c("x", "y", "z")
+
+> lst
+$odd
+[1] 1 3 5
+
+[[2]]
+NULL
+
+[[3]]
+NULL
+
+[[4]]
+[1] "x" "y" "z"
+
+
+> ## ----additional elements will be added at the end of the list------------
+> lst$greek <- c("alpha", "beta", "gamma")
+
+> lst
+$odd
+[1] 1 3 5
+
+[[2]]
+NULL
+
+[[3]]
+NULL
+
+[[4]]
+[1] "x" "y" "z"
+
+$greek
+[1] "alpha" "beta"  "gamma"
+
+
+> ## ---- echo = FALSE-------------------------------------------------------
+> suppressPackageStartupMessages(library(dplyr))
+
+> ## ----loading and attaching the dplyr package-----------------------------
+> # install.packages("dplyr")
+> library(dplyr)
+
+> ## ----example of mutate adding a new column based on an existing column----
+> head(
++   mutate(mtcars, displ_l = disp / 61.0237)
++ )
+   mpg cyl disp  hp drat    wt  qsec vs am gear carb  displ_l
+1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4 2.621932
+2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4 2.621932
+3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1 1.769804
+4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1 4.227866
+5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2 5.899347
+6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1 3.687092
+
+> ## ----example of select keeping only certain columns----------------------
+> head(
++   select(mtcars, cyl, mpg)
++ )
+                  cyl  mpg
+Mazda RX4           6 21.0
+Mazda RX4 Wag       6 21.0
+Datsun 710          4 22.8
+Hornet 4 Drive      6 21.4
+Hornet Sportabout   8 18.7
+Valiant             6 18.1
+
+> ## ----example of filter keeping only matching rows------------------------
+> filter(mtcars, cyl < 6, am == 1)
+   mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+1 22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+2 32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+3 30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
+4 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+5 27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+6 26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+7 30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
+8 21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
+
+> ## or equivalently filter(mtcars, cyl < 6 & am == 1) 
+> 
+> ## ----example of summarise aggregating a result of a calculation over rows----
+> summarise(mtcars, mean(disp))
+  mean(disp)
+1   230.7219
+
+> ## ----example of creating groups of rows based on their value of cyl------
+> by_cyl <- group_by(mtcars, cyl) 
+
+> head(by_cyl)
+# A tibble: 6 x 11
+# Groups:   cyl [3]
+    mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+  <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+1  21.0  6.00   160 110    3.90  2.62  16.5  0     1.00  4.00  4.00
+2  21.0  6.00   160 110    3.90  2.88  17.0  0     1.00  4.00  4.00
+3  22.8  4.00   108  93.0  3.85  2.32  18.6  1.00  1.00  4.00  1.00
+4  21.4  6.00   258 110    3.08  3.22  19.4  1.00  0     3.00  1.00
+5  18.7  8.00   360 175    3.15  3.44  17.0  0     0     3.00  2.00
+6  18.1  6.00   225 105    2.76  3.46  20.2  1.00  0     3.00  1.00
+
+> ## ----summarising a grouped data.frame------------------------------------
+> summarise(by_cyl, disp_bar = mean(disp), hp_bar = mean(hp)) 
+# A tibble: 3 x 3
+    cyl disp_bar hp_bar
+  <dbl>    <dbl>  <dbl>
+1  4.00      105   82.6
+2  6.00      183  122  
+3  8.00      353  209  
+
+> ## ----writing out the name of the data.frame repeatedly makes it hard to read----
+> head(mutate(mtcars, hp_per_cyl = mtcars$hp / mtcars$cyl))
+   mpg cyl disp  hp drat    wt  qsec vs am gear carb hp_per_cyl
+1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4   18.33333
+2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4   18.33333
+3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1   23.25000
+4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1   18.33333
+5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2   21.87500
+6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1   17.50000
+
+> ## ----dplyr knows that we mean the hp and cyl columns---------------------
+> head(mutate(mtcars, hp_per_cyl = hp / cyl))
+   mpg cyl disp  hp drat    wt  qsec vs am gear carb hp_per_cyl
+1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4   18.33333
+2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4   18.33333
+3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1   23.25000
+4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1   18.33333
+5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2   21.87500
+6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1   17.50000
+
+> ## ----we can not store the name of a column in its own variable, eval = FALSE----
+> ## column_to_divide <- cyl
+> 
+> ## ----we can store the name of the column as a string---------------------
+> column_to_divide <- "cyl"
+
+> ## ----trying to use a string in mutate will fail, eval = FALSE------------
+> ## head(mutate(mtcars, ratio = mpg / column_to_divide))
+> 
+> ## ----rlang provides support to use strings and variables in dplyr--------
+> # install.packages("rlang")
+> library(rlang)
+
+> head(mutate(mtcars, ratio = mpg / !!sym(column_to_divide))) 
+   mpg cyl disp  hp drat    wt  qsec vs am gear carb    ratio
+1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4 3.500000
+2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4 3.500000
+3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1 5.700000
+4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1 3.566667
+5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2 2.337500
+6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1 3.016667
+
+> ## ----the carb column is used not the variable----------------------------
+> carb <- 1000
+
+> head(mutate(mtcars, double_carb = carb * 2))
+   mpg cyl disp  hp drat    wt  qsec vs am gear carb double_carb
+1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4           8
+2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4           8
+3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1           2
+4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1           2
+5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2           4
+6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1           2
+
+> ## ----explicitly taking carb as a column in the data----------------------
+> head(mutate(mtcars, double_carb = .data$carb * 2))
+   mpg cyl disp  hp drat    wt  qsec vs am gear carb double_carb
+1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4           8
+2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4           8
+3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1           2
+4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1           2
+5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2           4
+6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1           2
+
+> ## ----explicitly taking carb as a variable in the environment-------------
+> head(mutate(mtcars, double_thousand = .env$carb * 2))
+   mpg cyl disp  hp drat    wt  qsec vs am gear carb double_thousand
+1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4            2000
+2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4            2000
+3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1            2000
+4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1            2000
+5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2            2000
+6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1            2000
+
+> ## ----selecting an atypically named column using backticks----------------
+> d <- data.frame(
++   x = 21,
++   `y variable` = 22,
++   `.2b` = 23,
++   check.names = FALSE
++ )
+
+> select(d, `y variable`, `.2b`)
+  y variable .2b
+1         22  23
+
+> ## ----passing a vector through several pipes------------------------------
+> c(100, 10, 1000) %>% 
++   log(base = 10) %>% 
++   mean()             
+[1] 2
+
+> ## ----a messy composition of many functions with arguments----------------
+> summarise(			
++   group_by(			
++     select(			
++       filter(mtcars, cyl > 4),	
++       mpg, hp, am
++     ),				
++     am
++   ),				
++   mileage = mean(mpg)		
++ )
+# A tibble: 2 x 2
+     am mileage
+  <dbl>   <dbl>
+1  0       16.1
+2  1.00    18.5
+
+> ## ----inline messy function composition which is near impossible to read----
+> summarise(group_by(select(filter(mtcars, cyl > 4), mpg, hp, am), am), mileage = mean(mpg))
+# A tibble: 2 x 2
+     am mileage
+  <dbl>   <dbl>
+1  0       16.1
+2  1.00    18.5
+
+> ## ----we could create temporary variables but this seems excessive--------
+> mtcars_filtered <- filter(mtcars, cyl > 4)
+
+> ## ----pipes allow arguments to be more easily matched to their functions----
+> mtcars %>%
++   filter(cyl > 4) %>% 
++   select(mpg, hp, am) %>%
++   group_by(am) %>% 
++   summarise(mileage = mean(mpg))
+# A tibble: 2 x 2
+     am mileage
+  <dbl>   <dbl>
+1  0       16.1
+2  1.00    18.5
+
+> ## ----using dot as a temporary variable helps show what is happening------
+> . <- mtcars
+
+> ## ----the dot is inserted into the first element of the next function-----
+> . <- filter(., cyl > 4)
+
+> ## ----the dot is again inserted into the first element of the next function----
+> . <- select(., mpg, hp, am)
+
+> ## ----the dot is available as a variable in piped calls-------------------
+> mtcars %>%
++   filter(seq_len(nrow(.)) %% 5 == 0) 
+   mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+1 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
+2 19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
+3 10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4
+4 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+5 19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2
+6 19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+
+> ## ----a data.frame which we would like to select only part of-------------
+> my_df <- data.frame(
++   x = c(1, 2, 3, 4), 
++   y = c("a", "b"),
++   z = c(2.1, 9.3, 7.6, 1.1), 
++   stringsAsFactors = FALSE
++ ) 
+
+> ## ----selecting the third row of my_df------------------------------------
+> my_df[3, ]
+  x y   z
+3 3 a 7.6
+
+> ## ----selecting rows with rownames----------------------------------------
+> mtcars["Porsche 914-2", ]
+              mpg cyl  disp hp drat   wt qsec vs am gear carb
+Porsche 914-2  26   4 120.3 91 4.43 2.14 16.7  0  1    5    2
+
+> ## ----selecting the third column of my_df---------------------------------
+> my_df[ , 3]
+[1] 2.1 9.3 7.6 1.1
+
+> ## ----if a single column is selected then a vector is returned when drop is TRUE----
+> class(my_df[ , 3])
+[1] "numeric"
+
+> ## ----selecting a single row still produces a data.frame------------------
+> class(my_df[3, ])
+[1] "data.frame"
+
+> ## ----overriding the drop argument----------------------------------------
+> my_df[ , 3, drop = FALSE]
+    z
+1 2.1
+2 9.3
+3 7.6
+4 1.1
+
+> ## ----the call looks odd but the additional comma is required-------------
+> my_df[3, , drop = TRUE]
+$x
+[1] 3
+
+$y
+[1] "a"
+
+$z
+[1] 7.6
+
+
+> ## ----neglecting the additional comma produces a warning------------------
+> my_df[3, drop = TRUE]
+    z
+1 2.1
+2 9.3
+3 7.6
+4 1.1
+
+> ## ----dollar-name selection from data.frames is very common---------------
+> my_df$x
+[1] 1 2 3 4
+
+> ## ----replacements behave in the same way as lists------------------------
+> my_df$z[2] <- 99
+
+> my_df
+  x y    z
+1 1 a  2.1
+2 2 b 99.0
+3 3 a  7.6
+4 4 b  1.1
+
+> ## ----named elements can be replaced--------------------------------------
+> my_df[1, "x"] <- 99
+
+> my_df
+   x y    z
+1 99 a  2.1
+2  2 b 99.0
+3  3 a  7.6
+4  4 b  1.1
+
+> ## ----entire columns can be added-----------------------------------------
+> my_df$new_column <- c("red", "blue", "green", "white")
+
+> my_df
+   x y    z new_column
+1 99 a  2.1        red
+2  2 b 99.0       blue
+3  3 a  7.6      green
+4  4 b  1.1      white
+
+> ## ----is.na() tests which values are NA-----------------------------------
+> x <- c(7, NA, 9, NA)
+
+> is.na(x)
+[1] FALSE  TRUE FALSE  TRUE
+
+> ## ----a data.frame with some NA values------------------------------------
+> d_NA <- data.frame(x, y = 1:4)
+
+> d_NA
+   x y
+1  7 1
+2 NA 2
+3  9 3
+4 NA 4
+
+> ## ----replacing the elements for which the x value is NA------------------
+> d_NA[is.na(d_NA$x), "x"] <- 0
+
+> d_NA
+  x y
+1 7 1
+2 0 2
+3 9 3
+4 0 4
+
+> ## ----producing a data.frame of which values are NA-----------------------
+> d_NA <- data.frame(x, y = 1:4)
+
+> is.na(d_NA)
+         x     y
+[1,] FALSE FALSE
+[2,]  TRUE FALSE
+[3,] FALSE FALSE
+[4,]  TRUE FALSE
+
+> ## ----replacing the NA elements of an entire data.frame-------------------
+> d_NA <- data.frame(x, y = 1:4)
+
+> d_NA[is.na(d_NA)] <- 0
+
+> d_NA
+  x y
+1 7 1
+2 0 2
+3 9 3
+4 0 4
+
+> ## ----is.na() has a replacement functionality-----------------------------
+> d_NA <- data.frame(x = 7:10, y = 1:4)
+
+> is.na(d_NA$x) <- c(1, 3) 
+
+> d_NA
+   x y
+1 NA 1
+2  8 2
+3 NA 3
+4 10 4
+
+> ## ----negating is.na() with an exclamation--------------------------------
+> y <- c(3, 4, NA, NA, 7)
+
+> y[!is.na(y)]
+[1] 3 4 7
+
+> ## ----testing whether each element satisfies the condition----------------
+> test_nums <- c(6, 5, 4, 5, 7, 4) 
+
+> test_nums > 5
+[1]  TRUE FALSE FALSE FALSE  TRUE FALSE
+
+> ## ----using logical values for selection----------------------------------
+> goodBad <- c("good", "bad", "good", "good", "bad")
+
+> goodBad[c(TRUE, FALSE, TRUE, TRUE, FALSE)]
+[1] "good" "good" "good"
+
+> ## ----recycling to select every second value------------------------------
+> goodBad[c(TRUE, FALSE)]
+[1] "good" "good" "bad" 
+
+> ## ----recycling the length-one "good" and performing the test-------------
+> goodBad == "good"
+[1]  TRUE FALSE  TRUE  TRUE FALSE
+
+> ## ----selecting based on the vectorised test------------------------------
+> goodBad[goodBad == "good"]
+[1] "good" "good" "good"
+
+> ## ----recycling and comparing---------------------------------------------
+> mtcars$cyl == 6
+ [1]  TRUE  TRUE FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE
+[13] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[25] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+
+> # equivalently mtcars[["cyl"]] == 6
+> 
+> ## ----selecting all columns but only rows which satisfy the condition-----
+> mtcars[mtcars$cyl == 6, ]
+                mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4      21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag  21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+Hornet 4 Drive 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+Valiant        18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+Merc 280       19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
+Merc 280C      17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4
+Ferrari Dino   19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+
+> ## ----selecting all columns but only rows which satisfy both conditions----
+> mtcars[mtcars$cyl == 6 & mtcars$am == 1, ]
+               mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4     21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+Ferrari Dino  19.7   6  145 175 3.62 2.770 15.50  0  1    5    6
+
+> ## ----selecting based on external information-----------------------------
+> mtcars[1:8 > 7, ]
+                     mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+Merc 240D           24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
+Lincoln Continental 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4
+Camaro Z28          13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4
+Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2
+
+> ## ----seven FALSE followed by one TRUE via recycling----------------------
+> 1:8 > 7
+[1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
+
+> ## ----selecting every second column and all rows--------------------------
+> head(
++   mtcars[, c(FALSE, TRUE)]
++ )
+                  cyl  hp    wt vs gear
+Mazda RX4           6 110 2.620  0    4
+Mazda RX4 Wag       6 110 2.875  0    4
+Datsun 710          4  93 2.320  1    4
+Hornet 4 Drive      6 110 3.215  1    3
+Hornet Sportabout   8 175 3.440  0    3
+Valiant             6 105 3.460  1    3
+
+> ## ----selecting columns starting with c or p and all rows-----------------
+> head(
++   mtcars[, startsWith(colnames(mtcars), "c") | endsWith(colnames(mtcars), "p")]
++ )
+                  cyl disp  hp carb
+Mazda RX4           6  160 110    4
+Mazda RX4 Wag       6  160 110    4
+Datsun 710          4  108  93    1
+Hornet 4 Drive      6  258 110    1
+Hornet Sportabout   8  360 175    2
+Valiant             6  225 105    1
+
+> ## ----identifying column names starting with c----------------------------
+> startsWith(colnames(mtcars), "c")
+ [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
+
+> ## ----identifying the indices of column names starting with c-------------
+> which(startsWith(colnames(mtcars), "c"))
+[1]  2 11
+
+> ## ----selecting the column names based on their index itself based on a comparison----
+> colnames(mtcars)[which(startsWith(colnames(mtcars), "c"))]
+[1] "cyl"  "carb"
+
+> ## ----using dplyr to select columns starting with c-----------------------
+> mtcars %>% 
++   select(starts_with("c")) %>% 
++   head()
+                  cyl carb
+Mazda RX4           6    4
+Mazda RX4 Wag       6    4
+Datsun 710          4    1
+Hornet 4 Drive      6    1
+Hornet Sportabout   8    2
+Valiant             6    1
+
+> ## ----using dplyr to select columns using a regex-------------------------
+> mtcars %>%
++   select(matches("^c|p$")) %>% 
++   head()
+                  cyl disp  hp carb
+Mazda RX4           6  160 110    4
+Mazda RX4 Wag       6  160 110    4
+Datsun 710          4  108  93    1
+Hornet 4 Drive      6  258 110    1
+Hornet Sportabout   8  360 175    2
+Valiant             6  225 105    1
+
+> ## ----a fivenum summary of a numeric vector-------------------------------
+> summary(3:9)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    3.0     4.5     6.0     6.0     7.5     9.0 
+
+> ## ----the mean is not necessarily equal to the median---------------------
+> set.seed(1)
+
+> summary(rlnorm(10))
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.4336  0.5851  1.2959  1.5166  1.7409  4.9297 
+
+> ## ----characteristics of a character vector-------------------------------
+> summary(letters)
+   Length     Class      Mode 
+       26 character character 
+
+> ## ----counts in each factor level-----------------------------------------
+> summary(iris$Species)
+    setosa versicolor  virginica 
+        50         50         50 
+
+> ## ----multiple fivenum summaries------------------------------------------
+> summary(iris[ , 3:5])
+  Petal.Length    Petal.Width          Species  
+ Min.   :1.000   Min.   :0.100   setosa    :50  
+ 1st Qu.:1.600   1st Qu.:0.300   versicolor:50  
+ Median :4.350   Median :1.300   virginica :50  
+ Mean   :3.758   Mean   :1.199                  
+ 3rd Qu.:5.100   3rd Qu.:1.800                  
+ Max.   :6.900   Max.   :2.500                  
+
+> ## ----producing a data.frame with some missing values---------------------
+> mtcars_NA <- mtcars[, 1:4] 
+
+> mtcars_NA[1, 4] <- NA 
+
+> mtcars_NA[2, 3] <- NA 
+
+> mtcars_NA[3, 4] <- NA 
+
+> mtcars_NA[4, 1] <- NA 
+
+> mtcars_NA[4, 3] <- NA 
+
+> head(mtcars_NA)
+                   mpg cyl disp  hp
+Mazda RX4         21.0   6  160  NA
+Mazda RX4 Wag     21.0   6   NA 110
+Datsun 710        22.8   4  108  NA
+Hornet 4 Drive      NA   6   NA 110
+Hornet Sportabout 18.7   8  360 175
+Valiant           18.1   6  225 105
+
+> ## ----counting missing elements in each column----------------------------
+> summary(mtcars_NA)
+      mpg             cyl             disp             hp       
+ Min.   :10.40   Min.   :4.000   Min.   : 71.1   Min.   : 52.0  
+ 1st Qu.:15.35   1st Qu.:4.000   1st Qu.:120.5   1st Qu.: 99.0  
+ Median :19.20   Median :6.000   Median :196.3   Median :136.5  
+ Mean   :20.05   Mean   :6.188   Mean   :232.2   Mean   :149.7  
+ 3rd Qu.:22.80   3rd Qu.:8.000   3rd Qu.:342.0   3rd Qu.:180.0  
+ Max.   :33.90   Max.   :8.000   Max.   :472.0   Max.   :335.0  
+ NA's   :1                       NA's   :2       NA's   :2      
+
+> ## ----calculating the mean of each column---------------------------------
+> aggregate(x = iris[, -5], by = list(Species = iris$Species), mean)
+     Species Sepal.Length Sepal.Width Petal.Length Petal.Width
+1     setosa        5.006       3.428        1.462       0.246
+2 versicolor        5.936       2.770        4.260       1.326
+3  virginica        6.588       2.974        5.552       2.026
+
+> ## ----formula interface to aggregate--------------------------------------
+> aggregate(formula = . ~ Species, data = iris, FUN = mean)
+     Species Sepal.Length Sepal.Width Petal.Length Petal.Width
+1     setosa        5.006       3.428        1.462       0.246
+2 versicolor        5.936       2.770        4.260       1.326
+3  virginica        6.588       2.974        5.552       2.026
+
+> ## ----the mean() function applied to a column of data (a vector)----------
+> mean(mtcars$mpg)
+[1] 20.09062
+
+> ## ----using summarise to apply a function over the rows of mtcars---------
+> library(dplyr)
+
+> summarise(mtcars, mileage = mean(mpg))
+   mileage
+1 20.09062
+
+> ## ----as.numeric() will return a vector not a data.frame------------------
+> as.numeric(summarise(mtcars, mileage = mean(mpg)))
+[1] 20.09062
+
+> ## ----the pipe can clean up this code a little----------------------------
+> library(dplyr)
+
+> mtcars %>%
++   summarise(mileage = mean(mpg)) %>%
++   as.numeric()
+[1] 20.09062
+
+> ## ----no data were harmed in the production of this value-----------------
+> mtcars %>% 
++   filter(am == 0) %>%
++   summarise(mileage = mean(mpg)) %>%
++   as.numeric()
+[1] 17.14737
+
+> ## ----we can modify the pipe sequence by commenting out a line------------
+> mtcars %>% 
++ #   filter(am == 0) %>%  
++   summarise(mileage = mean(mpg)) %>%
++   as.numeric()
+[1] 20.09062
+
+> ## ----try it yourself (1)-------------------------------------------------
+> max(mtcars[mtcars$am == 1, "wt"])
+[1] 3.57
+
+> ## ----try it yourself (2)-------------------------------------------------
+> mtcars %>%
++   filter(am == 1) %>%
++   summarise(max(wt)) %>%
++   as.numeric()
+[1] 3.57
+
+> ## ----try it yourself (3)-------------------------------------------------
+> min(mtcars[mtcars$am == 0, "wt"])
+[1] 2.465
+
+> ## ----try it yourself (4)-------------------------------------------------
+> mtcars %>%
++   filter(am == 0) %>%
++   summarise(min(wt)) %>%
++   as.numeric()
+[1] 2.465
+
+> ## ----try it yourself (5)-------------------------------------------------
+> mean(mtcars[mtcars$cyl == 6, "disp"])
+[1] 183.3143
+
+> ## ----try it yourself (6)-------------------------------------------------
+> mtcars %>%
++   filter(cyl == 6) %>%
++   summarise(mean(disp)) %>%
++   as.numeric()
+[1] 183.3143
+
+> ## ----try it yourself (7)-------------------------------------------------
+> mean(mtcars[mtcars$cyl == 4, "disp"])
+[1] 105.1364
+
+> ## ----try it yourself (8)-------------------------------------------------
+> mtcars %>%
++   filter(cyl == 4) %>%
++   summarise(mean(disp)) %>%
++   as.numeric()
+[1] 105.1364
+
+> ## ----try it yourself (9)-------------------------------------------------
+> aggregate(
++   x = mtcars[ , "disp", drop = FALSE],
++   by = list(cyl = mtcars$cyl),
++   FUN = mean
++ )
+  cyl     disp
+1   4 105.1364
+2   6 183.3143
+3   8 353.1000
+
+> ## ----try it yourself (10)------------------------------------------------
+> mtcars %>%
++   group_by(cyl) %>%
++   summarise(mean_disp = mean(disp))
+# A tibble: 3 x 2
+    cyl mean_disp
+  <dbl>     <dbl>
+1  4.00       105
+2  6.00       183
+3  8.00       353
+
+> ## ----turning off the partial matching warning, include = FALSE-----------
+> options(warnPartialMatchDollar = FALSE)
+> 
+> 

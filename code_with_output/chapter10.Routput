@@ -1,0 +1,369 @@
+> source('switch.R'); library('knitr'); source('RGlobal.R'); source('chapter10.R', echo=TRUE, print.eval=TRUE, keep.source=TRUE, max.deparse=1e3)
+
+> ## ----a simple function which prints a message----------------------------
+> makeMeSmile <- function() {
++   message("I can develop packages now!")
++ }
+
+> ## ----using the makeMeSmile() function------------------------------------
+> makeMeSmile()
+
+> ## ----adding an argument to the makeMeSmile() function--------------------
+> makeMeSmile <- function(me = "I") {          
++   message(me, " can develop packages now!")  
++ }
+
+> ## ----evaluating the makeMeSmile() function overriding the default argument----
+> makeMeSmile("You")
+
+> ## ----install the roxygen2 package----------------------------------------
+> # install.packages("roxygen2")
+> 
+> ## ----adding roxygen tags to our function---------------------------------
+> #' Reassure A User That They Are Doing Well
+> #' 
+> #' Look at that, they're building a documented function already!
+> #' 
+> #' @param me the user to resassure
+> #'
+> #' @return NULL (invisibly). Used for the side-effect of generating a
+> #'   \\code{message}.
+> #' @export
+> #'
+> #' @examples
+> #' makeMeSmile("You")
+> makeMeSmile <- function(me = "I") {
++   message(me, " can develop packages now!")
++ }
+
+> ## ------------------------------------------------------------------------
+> #' Row-wise tibble creation 
+> #'
+> #' Create [tibble]s using an easier to read row-by-row layout. 
+> #' This is useful for small tables of data where readability is
+> #' important.  Please see \link{tibble-package} for a general introduction.
+> #'
+> #' `frame_data()` is an older name for `tribble()`. It will eventually 
+> #' be phased out.
+> #'
+> #' @param ... Arguments specifying the structure of a `tibble`. 
+> #'   Variable names should be formulas, and may only appear before the data.
+> #' @return A [tibble]. 
+> #' @export 
+> #' @examples 
+> #' tribble(
+> #'   ~colA, ~colB,
+> #'   "a",   1,
+> #'   "b",   2,
+> #'   "c",   3
+> #' )
+> #'
+> #' # tribble will create a list column if the value in any cell is
+> #' # not a scalar
+> #' tribble(
+> #'   ~x,  ~y,
+> #'   "a", 1:3,
+> #'   "b", 4:6
+> #' )
+> tribble <- function(...) { 
++   data <- extract_frame_data_from_dots(...)
++   turn_frame_data_into_tibble(data$f .... [TRUNCATED] 
+
+> ## ----load and attach the testthat package--------------------------------
+> # install.packages("testthat")
+> library(testthat)
+
+> ## ----a simple function to test-------------------------------------------
+> add <- function(x, y) {
++   return(x + y)
++ }
+
+> ## ----tests to be performed on the add() function-------------------------
+> test_that("normal addition rules apply", {   
++   expect_equal(add(1L, 1L), 2L)              
++   expect_equal(add(-1, 1), 0)                
++   expect_error(add(1, "1"))                  
++   expect_error(add(1))                       
++   expect_type(add(1, 1), "double")           
++   expect_type(add(1L, 1L), "integer")        
++ })
+
+> ## ----this will fail by design, eval = FALSE------------------------------
+> ## test_that("adding two differently sized data.frames", {
+> ##   expect_silent(add(mtcars, iris))
+> ## })
+> 
+> ## ----can a data.frame be added to a number?------------------------------
+> test_that("adding a data.frame to a number", {
++   expect_silent(add(mtcars, 1))  
++ })  
+
+> ## ----data.frames are compatible with numbers using +---------------------
+> head(
++   add(mtcars, 1)
++ )
+                   mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4         22.0   7  161 111 4.90 3.620 17.46  1  2    5    5
+Mazda RX4 Wag     22.0   7  161 111 4.90 3.875 18.02  1  2    5    5
+Datsun 710        23.8   5  109  94 4.85 3.320 19.61  2  2    5    2
+Hornet 4 Drive    22.4   7  259 111 4.08 4.215 20.44  2  1    4    2
+Hornet Sportabout 19.7   9  361 176 4.15 4.440 18.02  1  1    4    3
+Valiant           19.1   7  226 106 3.76 4.460 21.22  2  1    4    2
+
+> ## ----the mtcars dataset--------------------------------------------------
+> head(mtcars)
+                   mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+
+> ## ----adding two data.frames also works-----------------------------------
+> test_that("adding two data.frames", {
++   expect_silent(add(mtcars, mtcars))  
++ })  
+
+> ## ----the result of adding the two data.frames----------------------------
+> head(
++   add(mtcars, mtcars)
++ )
+                   mpg cyl disp  hp drat   wt  qsec vs am gear carb
+Mazda RX4         42.0  12  320 220 7.80 5.24 32.92  0  2    8    8
+Mazda RX4 Wag     42.0  12  320 220 7.80 5.75 34.04  0  2    8    8
+Datsun 710        45.6   8  216 186 7.70 4.64 37.22  2  2    8    2
+Hornet 4 Drive    42.8  12  516 220 6.16 6.43 38.88  2  0    6    2
+Hornet Sportabout 37.4  16  720 350 6.30 6.88 34.04  0  0    6    4
+Valiant           36.2  12  450 210 5.52 6.92 40.44  2  0    6    2
+
+> ## ----profvis-example, fig.cap="Example from `?profvis`."-----------------
+> dat <- data.frame(
++   x = rnorm(5e4),
++   y = rnorm(5e4)
++ )
+
+> plot(x ~ y, data = dat)
+
+> m <- lm(x ~ y, data = dat)
+
+> abline(m, col = "red")
+
+> ## ----pairs of observed points--------------------------------------------
+> x <- c(1, 3, 4, 6)
+
+> y <- c(1.172, 2.394, 4.617, 6.045)
+
+> ## ----linear-points, fig.cap = "Values with a linear-like relationship", fig.width = 4----
+> # install.packages("ggplot2")
+> library(ggplot2)
+
+> z <- data.frame(x, y)
+
+> ggplot(z, aes(x, y)) + geom_point(size = 3) + coord_equal()
+
+> ## ----a linear model------------------------------------------------------
+> linear_model <- lm(y ~ x)
+
+> ## ----the linear model object---------------------------------------------
+> linear_model
+
+Call:
+lm(formula = y ~ x)
+
+Coefficients:
+(Intercept)            x  
+   -0.02215      1.02262  
+
+
+> ## ----summary of a linear model object------------------------------------
+> summary(linear_model)
+
+Call:
+lm(formula = y ~ x)
+
+Residuals:
+       1        2        3        4 
+ 0.17154 -0.65169  0.54869 -0.06854 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)  
+(Intercept) -0.02215    0.67306  -0.033   0.9767  
+x            1.02262    0.17096   5.982   0.0268 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.6164 on 2 degrees of freedom
+Multiple R-squared:  0.9471,	Adjusted R-squared:  0.9206 
+F-statistic: 35.78 on 1 and 2 DF,  p-value: 0.02683
+
+
+> ## ----predicting from a linear model--------------------------------------
+> prediction_x <- 1:6
+
+> prediction_y <- predict(linear_model, newdata = data.frame(x = prediction_x))
+
+> predicted <- data.frame(x = prediction_x, y = prediction_y)
+
+> predicted
+  x        y
+1 1 1.000462
+2 2 2.023077
+3 3 3.045692
+4 4 4.068308
+5 5 5.090923
+6 6 6.113538
+
+> ## ----predicted-points-lines, fig.cap = "Values with a linear-like relationship and line of best fit.", fig.width = 4----
+> ggplot(z, aes(x, y)) +
++   geom_point(size = 3) +
++   geom_point(data = predicted, aes(x, y), col = "blue") +
++   geom_line(data = predicted, aes(x, y), col = "blue") +
++   coord_equal()
+
+> ## ----grouped-points, fig.cap = "Grouped points. These were produced from two distinct groups but they are spread out enough that they appear like one group."----
+> # install.packages("dplyr")
+> library(dplyr)
+
+> sdxy <- 0.9
+
+> set.seed(2)
+
+> spread_data <- sample_frac( 
++   data.frame(x = c(
++     3 + rnorm(100, sd = sdxy),
++     6 + rnorm(100, sd = sdxy)
++   )) %>% mutate(
++     y = x + rnorm(100, sd = sdxy),
++     source = rep(c("A", "B"), each = 100)
++   ),
++   1
++ )
+
+> head(spread_data, 10) 
+           x        y source
+76  2.183601 3.628281      A
+18  3.032226 1.840193      A
+75  2.951650 3.177482      A
+45  3.560245 4.261439      A
+160 6.600770 6.446583      B
+28  2.463098 3.267834      A
+6   3.119178 3.464633      A
+44  4.713193 5.207872      A
+148 6.494918 6.748288      B
+122 6.124973 6.768940      B
+
+> ggplot(spread_data, aes(x, y)) + geom_point(size = 3)
+
+> ## ----kmeans clustering---------------------------------------------------
+> km <- kmeans(spread_data[, c("x", "y")], centers = 2)
+
+> str(km)
+List of 9
+ $ cluster     : Named int [1:200] 1 1 1 1 2 1 1 2 2 2 ...
+  ..- attr(*, "names")= chr [1:200] "76" "18" "75" "45" ...
+ $ centers     : num [1:2, 1:2] 2.78 5.88 2.77 6.12
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:2] "1" "2"
+  .. ..$ : chr [1:2] "x" "y"
+ $ totss       : num 1472
+ $ withinss    : num [1:2] 181 262
+ $ tot.withinss: num 442
+ $ betweenss   : num 1029
+ $ size        : int [1:2] 89 111
+ $ iter        : int 1
+ $ ifault      : int 0
+ - attr(*, "class")= chr "kmeans"
+
+> ## ----clustered-points, fig.width = 6, fig.cap = "Clustered points. The determined centers of the clusters are shown in black."----
+> ggplot(spread_data, aes(x, y)) + 
++   geom_point(size = 3, aes(col = factor(km$cluster))) +
++   geom_point(data = data.frame(
++     km$centers,
++     z = unique(km$cluster)
++   ), aes(x, y, shape = c("A", "B")), size = 5) +
++   guides(shape = guide_legend(title = "source"))
+
+> ## ----clustered-identified, fig.width = 6, fig.cap = "Notice some misidentified points."----
+> ggplot(spread_data, aes(x, y)) + 
++   geom_point(size = 3, aes(col = factor(km$cluster), shape = source)) +
++   geom_point(data = data.frame(
++     km$centers,
++     z = unique(km$cluster)
++   ), aes(x, y, shape = c("A", "B")), size = 5)
+
+> ## ----installing the maps package, eval = FALSE---------------------------
+> ## # install.packages("maps") 
+> 
+> ## ----using the ggplot2 package to extract map data-----------------------
+> # install.packages("ggplot2")
+> library(ggplot2) 
+
+> states <- map_data(map = "state") 
+
+> head(states)
+       long      lat group order  region subregion
+1 -87.46201 30.38968     1     1 alabama      <NA>
+2 -87.48493 30.37249     1     2 alabama      <NA>
+3 -87.52503 30.37249     1     3 alabama      <NA>
+4 -87.53076 30.33239     1     4 alabama      <NA>
+5 -87.57087 30.32665     1     5 alabama      <NA>
+6 -87.58806 30.32665     1     6 alabama      <NA>
+
+> ## ----geom-polygon, fig.cap = "States of the USA. Flat projection."-------
+> p <- ggplot(data = states) + 
++   geom_polygon(aes(x = long, y = lat, 
++                    fill = region, group = group), 
++                color = "white") + 
++   guides(fill=FALSE)  
+
+> p
+
+> ## ----fixed-aspect, fig.cap = "Fixing the aspect ratio begins to help but isn't really accurate."----
+> p + coord_fixed(1.3) 
+
+> ## ----install the mapproj package-----------------------------------------
+> # install.packages("mapproj")
+> 
+> ## ----coord-map, fig.cap = "A proper projection faithfully represents the map."----
+> p + coord_map(projection = "albers", lat0 = 30, lat1 = 40)
+
+> ## ----leaflet allows dynamic maps, eval = FALSE---------------------------
+> ## # install.packages("leaflet")
+> ## library(leaflet)
+> ## 
+> ## leaflet() %>%
+> ##   addProviderTiles("OpenStreetMap.BlackAndWhite") %>%  
+> ##   addMarkers(lng = 174.768, lat = -36.852, popup="The birthplace of R") %>%
+> ##   setView(155, -38, zoom = 4)
+> 
+> ## ----scraping the wikipedia opensearch API with httr---------------------
+> # install.packages("httr")
+> library(httr)
+
+> wiki_R <- content(GET("https://en.wikipedia.org/w/api.php?action=opensearch&search=R&limit=5"))
+
+> ## ----viewing the result with the data viewer, eval = FALSE---------------
+> ## View(wiki_R)
+> 
+> ## ----extracting a sub-component of the list------------------------------
+> ## URL for the letter R page
+> wiki_R[[4]][[1]]
+[1] "https://en.wikipedia.org/wiki/R"
+
+> ## Description for the letter R
+> strwrap(wiki_R[[3]][[1]], 60) 
+[1] "R (named ar/or ) is the 18th letter of the modern English"
+[2] "alphabet and the ISO basic Latin alphabet."               
+
+> ## ----extracting from the Star Wars API-----------------------------------
+> C3PO_response <- content(GET("https://swapi.co/api/people/2/"))
+
+> ## ----viewing the C3PO data with the data viewer, eval = FALSE------------
+> ## View(C3PO_response)
+> 
+> ## ---- echo = FALSE-------------------------------------------------------
+> ## reset knitr
+> knitr::opts_chunk$set(comment = '#>', fig.align = 'center', fig.width = 8, fig.height = 6, collapse = TRUE)
+> 
+> 

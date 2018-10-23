@@ -1,0 +1,915 @@
+> source('switch.R'); library('knitr'); source('RGlobal.R'); source('chapter05.R', echo=TRUE, print.eval=TRUE, keep.source=TRUE, max.deparse=1e3)
+
+> ## ----examples of vectors-------------------------------------------------
+> c(1.2, 2.8, 3.5)
+[1] 1.2 2.8 3.5
+
+> c("cat", "dog", "fish")
+[1] "cat"  "dog"  "fish"
+
+> c(TRUE, FALSE, TRUE)
+[1]  TRUE FALSE  TRUE
+
+> ## ----single values are still vectors-------------------------------------
+> c(6L)
+[1] 6
+
+> ## ----empty vectors are the same as NULL----------------------------------
+> c()
+NULL
+
+> ## ----empty vectors with a type-------------------------------------------
+> numeric(length = 0)
+numeric(0)
+
+> character(length = 0)
+character(0)
+
+> logical(length = 0)
+logical(0)
+
+> ## ----combining vectors makes longer vectors------------------------------
+> c(1, c(8, 9), 4)
+[1] 1 8 9 4
+
+> ## ----printing many values wraps over to the next line--------------------
+> print(LETTERS)
+ [1] "A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S"
+[20] "T" "U" "V" "W" "X" "Y" "Z"
+
+> ## ----str() shows information about the vector type and size--------------
+> str(c(1.2, 2.8, 3.5))
+ num [1:3] 1.2 2.8 3.5
+
+> str(c("cat", "dog", "fish"))
+ chr [1:3] "cat" "dog" "fish"
+
+> str(c(TRUE, FALSE, TRUE))
+ logi [1:3] TRUE FALSE TRUE
+
+> ## ----coercion to the most common type------------------------------------
+> c(2L, 4.3, 0)    
+[1] 2.0 4.3 0.0
+
+> c(TRUE, 5.3, 3L) 
+[1] 1.0 5.3 3.0
+
+> c(2L, 3L, "4")   
+[1] "2" "3" "4"
+
+> ## ----the type is the coerced type----------------------------------------
+> typeof(c(2L, 3L, "4"))
+[1] "character"
+
+> ## ----coercion happens at the earliest opportunity------------------------
+> c("1", 2L, 3L, c(4.0, 5.1))
+[1] "1"   "2"   "3"   "4"   "5.1"
+
+> ## ----missing values can appear in vectors--------------------------------
+> c(3L, NA, 5L)
+[1]  3 NA  5
+
+> ## ----specifying a character NA means the vector will be character--------
+> c(2, 3, NA_character_, 5)
+[1] "2" "3" NA  "5"
+
+> ## ----NULL cannot appear in a vector it will be skipped-------------------
+> c(3L, NULL, 5L)
+[1] 3 5
+
+> ## ------------------------------------------------------------------------
+> c("one", "two", "", "four")
+[1] "one"  "two"  ""     "four"
+
+> ## ----attributes hold additional information about an object--------------
+> x <- c(1, 2, 3, 4, 5)
+
+> attributes(x)
+NULL
+
+> ## ----you probably do not need to store attributes------------------------
+> attr(x, "important thing") <- "critical value"
+
+> attributes(x)
+$`important thing`
+[1] "critical value"
+
+
+> x
+[1] 1 2 3 4 5
+attr(,"important thing")
+[1] "critical value"
+
+> ## ----not all functions preserve attributes-------------------------------
+> y <- x + 1
+
+> attributes(y)
+$`important thing`
+[1] "critical value"
+
+
+> y
+[1] 2 3 4 5 6
+attr(,"important thing")
+[1] "critical value"
+
+> ## ----some functions simply drop attributes-------------------------------
+> z <- c(y, 12)
+
+> attributes(z)
+NULL
+
+> z
+[1]  2  3  4  5  6 12
+
+> ## ----vectors can have named elements-------------------------------------
+> c(apple = 5030, banana = 4011, pear = 4421)
+ apple banana   pear 
+  5030   4011   4421 
+
+> ## ----named vectors do not have their index listed------------------------
+> c(a = "antediluvian", b = "boisterously", c = "connoisseurs")
+             a              b              c 
+"antediluvian" "boisterously" "connoisseurs" 
+
+> ## ----dots can be included in vector element names------------------------
+> c(high.value = 100, .score = 7, round2 = 26)
+high.value     .score     round2 
+       100          7         26 
+
+> ## ----this fails because a name cannot start with dot-letter, eval = FALSE----
+> ## c(.2b = 6)
+> 
+> ## ----quote a vector element name to force it-----------------------------
+> c(".2b" = 6)
+.2b 
+  6 
+
+> ## ----spaces can be included in names if quoted---------------------------
+> c("one fish" = "red", "two fish" = "blue")
+one fish two fish 
+   "red"   "blue" 
+
+> ## ----not providing a name to one element---------------------------------
+> c(apple = 5030, 4011, pear = 4421)
+apple        pear 
+ 5030  4011  4421 
+
+> ## ----examining a Named vector--------------------------------------------
+> str(
++   c(
++     x = 7,
++     y = 8,
++     z = 9
++   )
++ )
+ Named num [1:3] 7 8 9
+ - attr(*, "names")= chr [1:3] "x" "y" "z"
+
+> ## ----the remaining output is identical to that of an unnamed vector------
+> str(
++   c(7, 8, 9)
++ )
+ num [1:3] 7 8 9
+
+> ## ----not providing a name to one element means it is assigned the empty string----
+> str(
++   c(apple = 5030, 4011, pear = 4421)
++ )
+ Named num [1:3] 5030 4011 4421
+ - attr(*, "names")= chr [1:3] "apple" "" "pear"
+
+> ## ----the hard way to write a regular sequence of values------------------
+> c(1L, 2L, 3L, 4L, 5L)
+[1] 1 2 3 4 5
+
+> ## ----an easier way to create a regular sequence of values----------------
+> seq(from = 1, to = 5)
+[1] 1 2 3 4 5
+
+> ## ----usin the defaults of seq to save time-------------------------------
+> seq(to = 5)
+[1] 1 2 3 4 5
+
+> ## ----not all of the defaults produce what you might expect---------------
+> seq(5)
+[1] 1 2 3 4 5
+
+> ## ----this fails because we can not count from 5 to 1 in steps of +0.5, eval = FALSE----
+> ## seq(5, by = 0.5)
+> 
+> ## ----we can count from 5 to 1 in steps of -0.5---------------------------
+> seq(5, by = -0.5)
+[1] 5.0 4.5 4.0 3.5 3.0 2.5 2.0 1.5 1.0
+
+> ## ----this is valid but perhaps not in the order you want-----------------
+> seq(-3)
+[1]  1  0 -1 -2 -3
+
+> ## ----this is an integer sequence-----------------------------------------
+> str(seq(5.0))
+ int [1:5] 1 2 3 4 5
+
+> ## ----using the by argument allows a numeric sequence to be produced------
+> str(seq(5, by = -1)) 
+ num [1:5] 5 4 3 2 1
+
+> ## ----non-integer regular sequences are perfectly acceptable--------------
+> seq(from = 1.2, to = 2.0, by = 0.2)
+[1] 1.2 1.4 1.6 1.8 2.0
+
+> ## ----sequences do not need to be equally spaced ends but they will be regular----
+> seq(from = pi, to = 6)
+[1] 3.141593 4.141593 5.141593
+
+> ## ----the easiest way to produce a regular sequence-----------------------
+> 1 : 5
+[1] 1 2 3 4 5
+
+> ## ------------------------------------------------------------------------
+> str(c(21, 22, 23, 24, 25))
+ num [1:5] 21 22 23 24 25
+
+> ## ----reverse sequences are easy with this shortcut-----------------------
+> 5 : 1
+[1] 5 4 3 2 1
+
+> ## ----these do not need to be at integer values but they will step by 1----
+> 2.1 : 6.4
+[1] 2.1 3.1 4.1 5.1 6.1
+
+> pi : 6
+[1] 3.141593 4.141593 5.141593
+
+> 3 : -3
+[1]  3  2  1  0 -1 -2 -3
+
+> ## ----creating a vector of values to iterate over-------------------------
+> patientNames <- c("Thomas", "Richard", "Henry")
+
+> ## ----this seems like an okay idea for creating an iterator---------------
+> 1:length(patientNames)
+[1] 1 2 3
+
+> ## ----if the vector is empty though we create a two-element iterator------
+> patientNames <- c()    
+
+> length(patientNames)   
+[1] 0
+
+> 1:length(patientNames) 
+[1] 1 0
+
+> ## ----seq_len() was made for counting elements----------------------------
+> patientNames <- c("Thomas", "Richard", "Henry")
+
+> seq_len(length(patientNames))
+[1] 1 2 3
+
+> seq_along(patientNames)
+[1] 1 2 3
+
+> ## ----seq_len() works even when the vector is empty-----------------------
+> seq_len(0)
+integer(0)
+
+> seq_along(c())
+integer(0)
+
+> ## ----a sequence up to a limit makes sense--------------------------------
+> lim <- 3
+
+> 1:lim
+[1] 1 2 3
+
+> ## ----trying to make a shorter sequence and something goes wrong----------
+> 1:lim - 1
+[1] 0 1 2
+
+> ## ----we need to use parentheses to force the precedence------------------
+> (1:lim) - 1
+[1] 0 1 2
+
+> ## ----changing the to argument using parentheses--------------------------
+> 1:(lim - 1)
+[1] 1 2
+
+> ## ----the power operator has a different precedence-----------------------
+> 1:lim ^ 2
+[1] 1 2 3 4 5 6 7 8 9
+
+> ## ----we could forego the parentheses but they aid our understanding------
+> 1:(lim ^ 2)
+[1] 1 2 3 4 5 6 7 8 9
+
+> ## ----lengths of vectors--------------------------------------------------
+> length(c(7, 8, 9))
+[1] 3
+
+> length(c("dog", "cat"))
+[1] 2
+
+> length(9:17)
+[1] 9
+
+> ## ----sums of vectors-----------------------------------------------------
+> sum(c(10, 20, 30))
+[1] 60
+
+> sum(10, 20, 30)
+[1] 60
+
+> ## ----mean of a vector----------------------------------------------------
+> mean(c(1, 2, 3, 4))
+[1] 2.5
+
+> ## ----min and max of vectors----------------------------------------------
+> min(c(91, 23, 59, 44))
+[1] 23
+
+> max(c(91, 23, 59, 44))
+[1] 91
+
+> ## ----standard deviation of vectors---------------------------------------
+> sd(c("3.206171 5.369698 8.175691 2.739249 4.839496"))
+[1] NA
+
+> ## ----trying to create a sequence up to one more than a length------------
+> patientNames <- c("Thomas", "Richard", "Henry")
+
+> 1:length(patientNames) + 1 
+[1] 2 3 4
+
+> ## ----recycling the single value to match the length of the longer value----
+> c(1, 2, 3) + c(1, 1, 1)
+[1] 2 3 4
+
+> ## ----when recycling will not create a full repetition--------------------
+> c(1, 2, 3) + c(2, 3)
+[1] 3 5 5
+
+> ## ----if the longer length is a multiple of the shorter length then recycling works well----
+> c(1, 2, 3, 4, 5, 6) + c(4, 3)
+[1] 5 5 7 7 9 9
+
+> ## ----vector math works for variables just the same-----------------------
+> x <- c(1, 2, 3)
+
+> y <- c(2, 3, 2)
+
+> x + y
+[1] 3 5 5
+
+> ## ----keep in mind how the recycling is happening here--------------------
+> x <- 1:10    
+
+> y <- c(1, 0) 
+
+> x * y        
+ [1] 1 0 3 0 5 0 7 0 9 0
+
+> ## ----explicitly repeating the value 5 six times--------------------------
+> c(6, 5, 4, 5, 7, 4) > c(5, 5, 5, 5, 5, 5)
+[1]  TRUE FALSE FALSE FALSE  TRUE FALSE
+
+> ## ----recycling the value 5 to the length of the longer vector------------
+> c(6, 5, 4, 5, 7, 4) > 5
+[1]  TRUE FALSE FALSE FALSE  TRUE FALSE
+
+> ## ----we can read this as compare each of the values but recycling is why it works----
+> test_nums <- c(6, 5, 4, 5, 7, 4) 
+
+> test_nums > 5
+[1]  TRUE FALSE FALSE FALSE  TRUE FALSE
+
+> ## ----these pairs of points should be in the same object------------------
+> x <- c(0.26, 0.57, 0.84, 0.72)
+
+> y <- c(0.01, 0.58, 0.82, 0.96)
+
+> ## ----now the pairs are linked as rows------------------------------------
+> xy <- matrix(data = c(x, y), nrow = 4, ncol = 2)
+
+> xy
+     [,1] [,2]
+[1,] 0.26 0.01
+[2,] 0.57 0.58
+[3,] 0.84 0.82
+[4,] 0.72 0.96
+
+> ## ----as long as the dimensions can be divided a matrix can be produced----
+> matrix(1:8, nrow = 2)
+     [,1] [,2] [,3] [,4]
+[1,]    1    3    5    7
+[2,]    2    4    6    8
+
+> matrix(1:8, nrow = 4)
+     [,1] [,2]
+[1,]    1    5
+[2,]    2    6
+[3,]    3    7
+[4,]    4    8
+
+> ## ----recycling will occur if needed--------------------------------------
+> matrix(1:7, nrow = 4)
+     [,1] [,2]
+[1,]    1    5
+[2,]    2    6
+[3,]    3    7
+[4,]    4    1
+
+> ## ----a matrix must be of a single type-----------------------------------
+> str(
++   matrix(1:8, nrow = 2)
++ )
+ int [1:2, 1:4] 1 2 3 4 5 6 7 8
+
+> ## ----the dimensions are stored in an attribute---------------------------
+> attributes(matrix(1:8, nrow = 2))
+$dim
+[1] 2 4
+
+
+> ## ----type and size information is provided by str()----------------------
+> str(xy)
+ num [1:4, 1:2] 0.26 0.57 0.84 0.72 0.01 0.58 0.82 0.96
+
+> ## ----coercion occurs at the vector step----------------------------------
+> matrix(c("a", 2, 3, 4, 5, 6), nrow = 3, ncol = 2)
+     [,1] [,2]
+[1,] "a"  "4" 
+[2,] "2"  "5" 
+[3,] "3"  "6" 
+
+> ## ----the colnames have not been provided to matrix()---------------------
+> colnames(xy)
+NULL
+
+> ## ----setting colnames on the xy matrix-----------------------------------
+> colnames(xy) <- c("x", "y")
+
+> xy
+        x    y
+[1,] 0.26 0.01
+[2,] 0.57 0.58
+[3,] 0.84 0.82
+[4,] 0.72 0.96
+
+> ## ----this will fail because recycling does not happen for names, eval = FALSE----
+> ## colnames(xy) <- c("z")
+> 
+> ## ----settting rownames on the xy matrix----------------------------------
+> rownames(xy) <- c("r1", "r2", "r3", "r4")
+
+> xy
+      x    y
+r1 0.26 0.01
+r2 0.57 0.58
+r3 0.84 0.82
+r4 0.72 0.96
+
+> ## ----a simple list object------------------------------------------------
+> list(7, 8, 9)
+[[1]]
+[1] 7
+
+[[2]]
+[1] 8
+
+[[3]]
+[1] 9
+
+
+> ## ----a more complicated list object with multiple types------------------
+> list(2L, "a", 5.2)
+[[1]]
+[1] 2
+
+[[2]]
+[1] "a"
+
+[[3]]
+[1] 5.2
+
+
+> ## ----lists can contain any other object as elements----------------------
+> list(
++   c(1.2, 4.8),
++   c(3L, 5L, 7L, 9L),
++   c("cat", "dog", "mouse")
++ )
+[[1]]
+[1] 1.2 4.8
+
+[[2]]
+[1] 3 5 7 9
+
+[[3]]
+[1] "cat"   "dog"   "mouse"
+
+
+> ## ----lists can have named elements---------------------------------------
+> list(
++   nameMatrix = matrix(c("a", 2, 3, 4, 5, 6), nrow = 3, ncol = 2), 
++   commonValue = NA,
++   index = 1:8
++ )
+$nameMatrix
+     [,1] [,2]
+[1,] "a"  "4" 
+[2,] "2"  "5" 
+[3,] "3"  "6" 
+
+$commonValue
+[1] NA
+
+$index
+[1] 1 2 3 4 5 6 7 8
+
+
+> ## ----NULL can appear in lists--------------------------------------------
+> list(
++   x = c(4, 5, 6),
++   y = NULL,
++   z = c(7, 8, 9)
++ )
+$x
+[1] 4 5 6
+
+$y
+NULL
+
+$z
+[1] 7 8 9
+
+
+> ## ----str() on a list shows the different types---------------------------
+> str(
++   list(
++     a = c(1.2, 2.3, 3.4),
++     b = 2:5,
++     c = c("alpha", "omega")
++   )
++ )
+List of 3
+ $ a: num [1:3] 1.2 2.3 3.4
+ $ b: int [1:4] 2 3 4 5
+ $ c: chr [1:2] "alpha" "omega"
+
+> ## ----an example data.frame-----------------------------------------------
+> data.frame(
++   list(                 
++     x = c(1, 2, 3, 4),
++     y = c("a", "b"),    
++     z = c(2.1, 9.3, 7.6, 1.1)
++   )
++ )
+  x y   z
+1 1 a 2.1
+2 2 b 9.3
+3 3 a 7.6
+4 4 b 1.1
+
+> ## ----the intermediate call to list() is not necessary--------------------
+> data.frame(
++   x = c(1, 2, 3, 4),
++   y = c("a", "b"),
++   z = c(2.1, 9.3, 7.6, 1.1)
++ )
+  x y   z
+1 1 a 2.1
+2 2 b 9.3
+3 3 a 7.6
+4 4 b 1.1
+
+> ## ----name columns carefully----------------------------------------------
+> data.frame(c(1, 2), "'oh no!'")
+  c.1..2. X..oh.no...
+1       1    'oh no!'
+2       2    'oh no!'
+
+> ## ----creating a data.frame with quoted column names----------------------
+> data.frame(
++   x = 21,
++   "y variable" = 22,
++   ".2b" = 23
++ )
+   x y.variable X.2b
+1 21         22   23
+
+> ## ----forcing the spaces to remain in column names------------------------
+> data.frame(
++   x = 21,
++   "y variable" = 22,
++   ".2b" = 23,
++   check.names = FALSE
++ )
+   x y variable .2b
+1 21         22  23
+
+> ## ----this will fail because the vectors are not the same length, eval = FALSE----
+> ## data.frame(x = c(3, 4), y = c("q", "r", "s"))
+> 
+> ## ----an empty data.frame()-----------------------------------------------
+> data.frame()
+data frame with 0 columns and 0 rows
+
+> ## ----columns can not be NULL---------------------------------------------
+> data.frame(x = c(), y = c(), z = c())
+data frame with 0 columns and 0 rows
+
+> ## ----a zero-row data.frame with columns----------------------------------
+> data.frame(
++   x = integer(),
++   y = character(),
++   z = numeric()
++ ) 
+[1] x y z
+<0 rows> (or 0-length row.names)
+
+> ## ----attempting to create a data.frame with char and num columns---------
+> char_and_num_df <- data.frame(
++   x = c("apple", "banana", "carrot"),
++   y = c(5, 6, 7)
++ )
+
+> str(char_and_num_df)
+'data.frame':	3 obs. of  2 variables:
+ $ x: Factor w/ 3 levels "apple","banana",..: 1 2 3
+ $ y: num  5 6 7
+
+> ## ----use stringsAsFactors FALSE to prevent conversion to factor----------
+> char_and_num_df <- data.frame(
++   x = c("apple", "banana", "carrot"),
++   y = c(5, 6, 7),
++   stringsAsFactors = FALSE 
++ )
+
+> str(char_and_num_df)
+'data.frame':	3 obs. of  2 variables:
+ $ x: chr  "apple" "banana" "carrot"
+ $ y: num  5 6 7
+
+> ## ----setting the global option of stringsAsFactors FALSE, eval = FALSE----
+> ## options(stringsAsFactors = FALSE)
+> 
+> ## ----the attributes of a data.frame--------------------------------------
+> attributes(mtcars)
+$names
+ [1] "mpg"  "cyl"  "disp" "hp"   "drat" "wt"   "qsec" "vs"   "am"   "gear"
+[11] "carb"
+
+$row.names
+ [1] "Mazda RX4"           "Mazda RX4 Wag"       "Datsun 710"         
+ [4] "Hornet 4 Drive"      "Hornet Sportabout"   "Valiant"            
+ [7] "Duster 360"          "Merc 240D"           "Merc 230"           
+[10] "Merc 280"            "Merc 280C"           "Merc 450SE"         
+[13] "Merc 450SL"          "Merc 450SLC"         "Cadillac Fleetwood" 
+[16] "Lincoln Continental" "Chrysler Imperial"   "Fiat 128"           
+[19] "Honda Civic"         "Toyota Corolla"      "Toyota Corona"      
+[22] "Dodge Challenger"    "AMC Javelin"         "Camaro Z28"         
+[25] "Pontiac Firebird"    "Fiat X1-9"           "Porsche 914-2"      
+[28] "Lotus Europa"        "Ford Pantera L"      "Ferrari Dino"       
+[31] "Maserati Bora"       "Volvo 142E"         
+
+$class
+[1] "data.frame"
+
+
+> ## ----by default rows are named by their index----------------------------
+> data.frame(
++   col1 = c("x", "y", "z"), 
++   col2 = c("q", "r", "s")
++ )
+  col1 col2
+1    x    q
+2    y    r
+3    z    s
+
+> ## ----mtcars uses rownames to store the name of each vehicle--------------
+> rownames(mtcars) 
+ [1] "Mazda RX4"           "Mazda RX4 Wag"       "Datsun 710"         
+ [4] "Hornet 4 Drive"      "Hornet Sportabout"   "Valiant"            
+ [7] "Duster 360"          "Merc 240D"           "Merc 230"           
+[10] "Merc 280"            "Merc 280C"           "Merc 450SE"         
+[13] "Merc 450SL"          "Merc 450SLC"         "Cadillac Fleetwood" 
+[16] "Lincoln Continental" "Chrysler Imperial"   "Fiat 128"           
+[19] "Honda Civic"         "Toyota Corolla"      "Toyota Corona"      
+[22] "Dodge Challenger"    "AMC Javelin"         "Camaro Z28"         
+[25] "Pontiac Firebird"    "Fiat X1-9"           "Porsche 914-2"      
+[28] "Lotus Europa"        "Ford Pantera L"      "Ferrari Dino"       
+[31] "Maserati Bora"       "Volvo 142E"         
+
+> ## ----printing different classes of object--------------------------------
+> print(c(4, 5, 6))
+[1] 4 5 6
+
+> print(matrix(c(4, 5, 6)))
+     [,1]
+[1,]    4
+[2,]    5
+[3,]    6
+
+> print(data.frame(a = c(4, 5, 6)))
+  a
+1 4
+2 5
+3 6
+
+> ## ----calling methods explicitly------------------------------------------
+> d <- data.frame(x = 1:3, y = c(3.6, 2.7, 0.4))
+
+> print.data.frame(d)
+  x   y
+1 1 3.6
+2 2 2.7
+3 3 0.4
+
+> print.default(d)
+$x
+[1] 1 2 3
+
+$y
+[1] 3.6 2.7 0.4
+
+attr(,"class")
+[1] "data.frame"
+
+> ## ----pretending that a vector is a data.frame----------------------------
+> x <- c(4, 5, 6)          
+
+> class(x) <- "data.frame" 
+
+> print(x)                 
+NULL
+<0 rows> (or 0-length row.names)
+
+> ## ----objects can and often do have multiple classes----------------------
+> class(d) <- c("specialObject", "data.frame")
+
+> str(d)
+Classes ‘specialObject’ and 'data.frame':	3 obs. of  2 variables:
+ $ x: int  1 2 3
+ $ y: num  3.6 2.7 0.4
+
+> print(d)
+  x   y
+1 1 3.6
+2 2 2.7
+3 3 0.4
+
+> ## ----defining our own print method for class specialObject---------------
+> print.specialObject <- function(x, ...) {
++   cat("## I'm more than just a data.frame!\n")
++   print.data.frame(x)
++ }
+
+> print(d)
+## I'm more than just a data.frame!
+  x   y
+1 1 3.6
+2 2 2.7
+3 3 0.4
+
+> ## ----load and attach the tibble package----------------------------------
+> # install.packages("tibble")
+> library(tibble)
+
+> ## ----showing the print features of tibble, eval = FALSE------------------
+> ## tibble(
+> ##   chars = letters[1:5],
+> ##   nums = -2:2,
+> ##   missing = c("x", NA, "y", NA, "NA"),
+> ##   precise = c(1.00002, 1.0002, 100.002, 10.200, 0.002)
+> ## )
+> 
+> ## ----creating a tibble with a list-column--------------------------------
+> tibble(
++   x = 1:3,                        
++   y = list(letters, TRUE, mtcars) 
++ )
+# A tibble: 3 x 2
+      x y                     
+  <int> <list>                
+1     1 <chr [26]>            
+2     2 <lgl [1]>             
+3     3 <data.frame [32 × 11]>
+
+> ## ----creating a more complicated tibble----------------------------------
+> my_tbl <- as.tibble( 
++   list(              
++     x = 1:3,         
++     y = list(        
++       letters,       
++       TRUE,          
++       mtcars         
++     )
++   )
++ )
+
+> ## ----printing a tibble---------------------------------------------------
+> my_tbl
+# A tibble: 3 x 2
+      x y                     
+  <int> <list>                
+1     1 <chr [26]>            
+2     2 <lgl [1]>             
+3     3 <data.frame [32 × 11]>
+
+> ## ----creating a large object which would be unpleasant to print----------
+> m <- as.data.frame(
++   matrix(
++     1:676, c(26, 26),
++     dimnames = list(1:26, LETTERS)
++   )
++ )
+
+> ## ----printing the first six rows produces already too much output--------
+> head(m)
+  A  B  C  D   E   F   G   H   I   J   K   L   M   N   O   P   Q   R   S   T
+1 1 27 53 79 105 131 157 183 209 235 261 287 313 339 365 391 417 443 469 495
+2 2 28 54 80 106 132 158 184 210 236 262 288 314 340 366 392 418 444 470 496
+3 3 29 55 81 107 133 159 185 211 237 263 289 315 341 367 393 419 445 471 497
+4 4 30 56 82 108 134 160 186 212 238 264 290 316 342 368 394 420 446 472 498
+5 5 31 57 83 109 135 161 187 213 239 265 291 317 343 369 395 421 447 473 499
+6 6 32 58 84 110 136 162 188 214 240 266 292 318 344 370 396 422 448 474 500
+    U   V   W   X   Y   Z
+1 521 547 573 599 625 651
+2 522 548 574 600 626 652
+3 523 549 575 601 627 653
+4 524 550 576 602 628 654
+5 525 551 577 603 629 655
+6 526 552 578 604 630 656
+
+> ## ----the print method for tibble produces sensible output----------------
+> as.tibble(m)
+# A tibble: 26 x 26
+       A     B     C     D     E     F     G     H     I     J     K     L
+ * <int> <int> <int> <int> <int> <int> <int> <int> <int> <int> <int> <int>
+ 1     1    27    53    79   105   131   157   183   209   235   261   287
+ 2     2    28    54    80   106   132   158   184   210   236   262   288
+ 3     3    29    55    81   107   133   159   185   211   237   263   289
+ 4     4    30    56    82   108   134   160   186   212   238   264   290
+ 5     5    31    57    83   109   135   161   187   213   239   265   291
+ 6     6    32    58    84   110   136   162   188   214   240   266   292
+ 7     7    33    59    85   111   137   163   189   215   241   267   293
+ 8     8    34    60    86   112   138   164   190   216   242   268   294
+ 9     9    35    61    87   113   139   165   191   217   243   269   295
+10    10    36    62    88   114   140   166   192   218   244   270   296
+# ... with 16 more rows, and 14 more variables: M <int>, N <int>, O <int>,
+#   P <int>, Q <int>, R <int>, S <int>, T <int>, U <int>, V <int>, W <int>,
+#   X <int>, Y <int>, Z <int>
+
+> ## ----tibbles can deal with strange column names--------------------------
+> tibble(
++   x = 21,
++   `y variable` = 22,
++   `.2b` = 23
++ )
+# A tibble: 1 x 3
+      x `y variable` `.2b`
+  <dbl>        <dbl> <dbl>
+1  21.0         22.0  23.0
+
+> ## ----taking the square root of a single value (still a vector)-----------
+> sqrt(9)
+[1] 3
+
+> ## ----taking the square root of a longer vector of values-----------------
+> sqrt(c(9, 16, 25))
+[1] 3 4 5
+
+> ## ----a highly structured result returned from a function, eval = FALSE----
+> ## str(lm(1~1))
+> ## #> List of 11
+> ## #>  $ coefficients : Named num 1
+> ## #>   ..- attr(*, "names")= chr "(Intercept)"
+> ## #>  $ residuals    : Named num 0
+> ## #>   ..- attr(*, "names")= chr "1"
+> ## #>  $ effects      : Named num 1
+> ## #>   ..- attr(*, "names")= chr "(Intercept)"
+> ## #>  $ rank         : int 1
+> ## #>  $ fitted.values: Named num 1
+> ## #>   ..- attr(*, "names")= chr "1"
+> ## #>  $ assign       : int 0
+> ## #>  $ qr           :List of 5
+> ## #>   ..$ qr   : num [1, 1] 1
+> ## #>   .. ..- attr(*, "dimnames")=List of 2
+> ## #>   .. .. ..$ : chr "1"
+> ## #>   .. .. ..$ : chr "(Intercept)"
+> ## #>   .. ..- attr(*, "assign")= int 0
+> ## #>   ..$ qraux: num 1
+> ## #>   ..$ pivot: int 1
+> ## #>   ..$ tol  : num 1e-07
+> ## #>   ..$ rank : int 1
+> ## #>   ..- attr(*, "class")= chr "qr"
+> ##   <truncated>
+> 
+> ## ----creating a data.frame yourself--------------------------------------
+> data. .... [TRUNCATED] 
+     name age likes_red_wine height_m
+1   Alice  21           TRUE     1.65
+2     Bob  43          FALSE     1.50
+3 Charlie  19           TRUE     1.75
+> 
+> 
