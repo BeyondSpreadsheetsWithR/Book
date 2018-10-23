@@ -25,7 +25,51 @@
 
 <br />
 
+## About This Book
+
+Spreadsheets are powerful tools for many tasks, but if you need to interpret,
+interrogate, and present data, they can feel like the wrong tools for the task.
+That’s when R programming is the way to go. The R programming language provides
+a comfortable environment to properly handle all types of data. And within the
+open-source RStudio develop-ment suite, you have at your fi ngertips easy-to-use
+ways to simplify complex manipulations and create reproducible processes for
+analysis and reporting.
+
+With Beyond Spreadsheets with R you’ll learn how to go from raw data to
+meaningful insights using R and RStudio. Each carefully crafted chapter covers a
+unique way to wrangle data, from understanding individual values to interacting
+with complex collections of data, including data you scrape from the web. You’ll
+build on simple programming techniques like loops and conditionals to create
+your own custom functions. You’ll come away with a toolkit of strategies for
+analyzing and visualizing data of all sorts. 
+
+What’s Inside: 
+
+ - How to start programming with R and RStudio 
+ - Understanding and implementing important R structures and operators
+ - Installing and working with R packages
+ - Tidying, refining, and plotting your data
+ 
+If you’re comfortable writing formulas in Excel, you’re ready for this book.
+
 ## Code Resources
+
+### Run The Code Yourself
+
+This book was written using R and Rmarkdown, and for both consistency and 
+reproducibility, the code output was generated using R itself, and inserted 
+inline. The code snippets were then extracted and are hosted here to save you 
+from having to enter them manually.
+
+The R code chunks for each chapter can be found here: 
+https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code
+
+The R code cunks with their generated output can be found here: https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code_with_output
+
+While some effort has been made to ensure that any changes to the book have been 
+reflected in these files, some minor discrepancies may arise. Feel free to 
+create an [issue](https://github.com/BeyondSpreadsheetsWithR/Book/issues/new) 
+if you find one.
 
 ### Installing R Packages Used in the Book
 
