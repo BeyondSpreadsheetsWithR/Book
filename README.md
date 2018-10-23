@@ -52,6 +52,14 @@ What’s Inside:
  
 If you’re comfortable writing formulas in Excel, you’re ready for this book.
 
+More details will be added to the
+[wiki](https://github.com/BeyondSpreadsheetsWithR/Book/wiki) as they 
+become available.
+
+You can buy this Book (pdf, ePub, kindle, liveBook) at the Manning site:
+
+https://www.manning.com/books/beyond-spreadsheets-with-r
+
 ## Code Resources
 
 ### Run The Code Yourself
