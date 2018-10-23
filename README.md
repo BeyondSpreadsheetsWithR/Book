@@ -64,7 +64,7 @@ from having to enter them manually.
 The R code chunks for each chapter can be found here: 
 https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code
 
-The R code cunks with their generated output can be found here: https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code_with_output
+The R code chunks with their generated output can be found here: https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code_with_output
 
 While some effort has been made to ensure that any changes to the book have been 
 reflected in these files, some minor discrepancies may arise. Feel free to 
