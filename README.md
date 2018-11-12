@@ -60,6 +60,10 @@ You can buy this Book (pdf, ePub, kindle, liveBook) at the Manning site:
 
 https://www.manning.com/books/beyond-spreadsheets-with-r
 
+## GitHub
+
+This site links directly from the book's [GitHub Repository](https://github.com/BeyondSpreadsheetsWithR/Book), where you will find various helpful resources.
+
 ## Code Resources
 
 ### Run The Code Yourself
@@ -70,9 +74,9 @@ inline. The code snippets were then extracted and are hosted here to save you
 from having to enter them manually.
 
 The R code chunks for each chapter can be found here: 
-https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code
+[https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code](https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code/)
 
-The R code chunks with their generated output can be found here: https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code_with_output
+The R code chunks with their generated output can be found here: [https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code_with_output](https://github.com/BeyondSpreadsheetsWithR/Book/tree/master/code_with_output)
 
 While some effort has been made to ensure that any changes to the book have been 
 reflected in these files, some minor discrepancies may arise. Feel free to 
