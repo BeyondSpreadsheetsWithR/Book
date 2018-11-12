@@ -58,7 +58,7 @@ become available.
 
 You can buy this Book (pdf, ePub, kindle, liveBook) at the Manning site:
 
-https://www.manning.com/books/beyond-spreadsheets-with-r
+[https://www.manning.com/books/beyond-spreadsheets-with-r](https://www.manning.com/books/beyond-spreadsheets-with-r)
 
 ## GitHub
 
@@ -147,4 +147,4 @@ switchTo("BeyondSpreadsheets")
 
 ## Buy the Book (physical, pdf, ePub, kindle, liveBook)
 
-https://www.manning.com/books/beyond-spreadsheets-with-r
+[https://www.manning.com/books/beyond-spreadsheets-with-r](https://www.manning.com/books/beyond-spreadsheets-with-r)
