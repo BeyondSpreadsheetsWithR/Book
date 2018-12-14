@@ -21,7 +21,7 @@
 	
 	![Cat](https://raw.githubusercontent.com/{user}/{repo}/assets/cat.png)
 -->
-<img src="https://raw.githubusercontent.com/BeyondSpreadsheetsWithR/Book/7058e0b57c7c5e40459528e7bab13b7a7a40d391/Carroll-BSwithR-MEAP-HI.png" width = "50%" title = "MEAP Cover">
+<img src="https://raw.githubusercontent.com/BeyondSpreadsheetsWithR/Book/assets/Carroll-BSwithR-HI.png" width = "50%" title = "Cover">
 
 <br />
 
